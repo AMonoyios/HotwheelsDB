@@ -14,4 +14,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   resources:
     gitHubIcon: {fileID: 2800000, guid: 4d3684e5db688b14eb047b3308b6bd74, type: 3}
-  builds: []
+  builds:
+  - name: 0.0.1
+    changeLog:
+    - name: Connect with hotwheels fandom api
+      desc: Establish a connection responce
+      state: 4
+      isVisibleInInspector: 0
+    - name: Implement a way to fetch images
+      desc: 
+      state: 4
+      isVisibleInInspector: 0
+    state: 1
+    isVisibleInInspector: 0
+  - name: 0.0.2
+    changeLog:
+    - name: Figure out navigation
+      desc: "get to know how json responces work & \nhow to navigate through them"
+      state: 1
+      isVisibleInInspector: 1
+    state: 0
+    isVisibleInInspector: 1

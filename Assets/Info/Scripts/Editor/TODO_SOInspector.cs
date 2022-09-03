@@ -44,11 +44,6 @@ public sealed class TODO_SOInspector : Editor
     {
         margin = new RectOffset(10, 0, 0, 0)
     };
-    private GUIStyle HeaderStyle => new(EditorStyles.boldLabel)
-    {
-        fontSize = 50,
-        alignment = TextAnchor.MiddleCenter
-    };
     private GUIStyle StatusStyle => new(EditorStyles.whiteLabel);
     #endregion
 
@@ -71,7 +66,7 @@ public sealed class TODO_SOInspector : Editor
 
         baseColor = GUI.color;
 
-        root.resources.gitHubIcon = (Texture2D)CustomResources.FetchObject("GitHub_Icon");
+        root.resources.gitHubIcon = (Texture2D)CoreResources.FetchObject("GitHub_Icon");
     }
 
     public override void OnInspectorGUI()
@@ -110,7 +105,8 @@ public sealed class TODO_SOInspector : Editor
         // Current status of latest builds
         CoreEditorGUILayout.BeginVertical(() =>
         {
-            EditorGUILayout.LabelField("Latest Dev build: " + root.GetLatestVersionName(TODO_ScriptableObject.BuildState.Dev, TODO_ScriptableObject.FeatureState.Live, true), StatusStyle);
+            EditorGUILayout.LabelField("Latest Dev build: " + root.GetLatestVersionName(TODO_ScriptableObject.BuildState.Dev, TODO_ScriptableObject.FeatureState.Pending, true), StatusStyle);
+            EditorGUILayout.LabelField("Latest Test build: " + root.GetLatestVersionName(TODO_ScriptableObject.BuildState.Test, TODO_ScriptableObject.FeatureState.Pending, true), StatusStyle);
             EditorGUILayout.LabelField("Latest Live build: " + root.GetLatestVersionName(TODO_ScriptableObject.BuildState.Live, TODO_ScriptableObject.FeatureState.Live), StatusStyle);
         }, EditorStyles.helpBox);
 

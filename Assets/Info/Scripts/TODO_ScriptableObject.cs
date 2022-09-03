@@ -52,6 +52,8 @@ public sealed class TODO_ScriptableObject : ScriptableObject
     {
         [InspectorName("Development")]
         Dev,
+        [InspectorName("Testing")]
+        Test,
         Live
     }
 
