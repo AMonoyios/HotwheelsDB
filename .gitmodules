@@ -1,0 +1,3 @@
+[submodule "Assets/core-common"]
+	path = Assets/core-common
+	url = https://github.com/AMonoyios/core-common.git
