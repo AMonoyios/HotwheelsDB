@@ -29,9 +29,20 @@ MonoBehaviour:
     isVisibleInInspector: 0
   - name: 0.0.2
     changeLog:
-    - name: Figure out navigation
-      desc: "get to know how json responces work & \nhow to navigate through them"
-      state: 1
+    - name: Convert networking class to a namespace
+      desc: 'Implement a namespace for core-common that includes all
+
+        networking
+        functions in it.'
+      state: 4
+      isVisibleInInspector: 0
+    - name: Create a find algorithm
+      desc: 'Use Aho-Corasick algorithm due to the bulk of the html result
+
+
+        Currently
+        only returns true or false'
+      state: 2
       isVisibleInInspector: 1
-    state: 0
+    state: 1
     isVisibleInInspector: 1

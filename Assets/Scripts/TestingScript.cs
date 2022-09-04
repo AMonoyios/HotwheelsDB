@@ -1,29 +1,52 @@
+/*
+ * Script developed by Andreas Monoyios
+ * GitHub: https://github.com/AMonoyios?tab=repositories
+ */
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-using UnityEngine.Networking;
 using TMPro;
-using System;
 using UnityEngine.UI;
-
-using PD.Utils.Convertions;
+using PD.Networking;
+using PD.Utils.Algorithms;
 
 public class TestingScript : MonoBehaviour
 {
+    [Header("HTML")]
     [SerializeField]
     private TextMeshProUGUI responseText;
+
+    [Header("Image")]
     [SerializeField]
     private Image responseImage;
     [SerializeField]
     private TextMeshProUGUI responseTextureText;
 
-    private static string GetJsonUrl => "https://hotwheels.fandom.com/wiki/Hot_Wheels";
-    private static string GetImageUrl => "https://static.wikia.nocookie.net/hotwheels/images/e/e6/Site-logo.png/revision/latest?cb=20210601150811";
+    [Header("Find")]
+    [SerializeField]
+    private TMP_InputField findInputTextField;
+    private Image findInputTextFieldImage;
+
+    private static string GetHomeUrl => "https://hotwheels.fandom.com/wiki/Hot_Wheels";
+    private static string GetStatisticsUrl => "https://hotwheels.fandom.com/wiki/Special:Statistics";
+    private static string GetHWLogoImageUrl => "https://static.wikia.nocookie.net/hotwheels/images/e/e6/Site-logo.png/revision/latest?cb=20210601150811";
+    private static string GetStatisticsTableID => "wikitable mw-statistics-table";
 
     private void Start()
     {
-        GetJson(GetJsonUrl,
+        if (findInputTextField != null)
+        {
+            findInputTextFieldImage = findInputTextField.GetComponent<Image>();
+        }
+        else
+        {
+            Debug.LogError("Error: findInputTextField is null");
+        }
+
+        CoreRequest.Init();
+
+        CoreRequest.GetHTML(GetStatisticsUrl,
             (string error) =>
             {
                 Debug.LogError($"Error: {error}");
@@ -36,7 +59,7 @@ public class TestingScript : MonoBehaviour
             }
         );
 
-        GetSprite(GetImageUrl,
+        CoreRequest.GetSprite(GetHWLogoImageUrl,
             (string error) =>
             {
                 Debug.LogError($"Error: {error}");
@@ -52,47 +75,26 @@ public class TestingScript : MonoBehaviour
         );
     }
 
-    private void GetJson(string url, Action<string> onError, Action<string> onSuccess)
+    public void FindString(TMP_InputField input)
     {
-        StartCoroutine(GetJsonCoroutine(url, onError, onSuccess));
-    }
-    private IEnumerator GetJsonCoroutine(string url, Action<string> onError, Action<string> onSuccess)
-    {
-        using UnityWebRequest unityWebRequest = UnityWebRequest.Get(url);
-            yield return unityWebRequest.SendWebRequest();
-
-        if (unityWebRequest.result == UnityWebRequest.Result.ConnectionError || unityWebRequest.result == UnityWebRequest.Result.ProtocolError)
+        if (input.text?.Length == 0 || input.text == null)
         {
-            onError(unityWebRequest.error);
+            Debug.LogWarning("Input field was Null or Empty, Algorithm did not run.");
+            findInputTextFieldImage.color = Color.white;
         }
         else
         {
-            onSuccess(unityWebRequest.downloadHandler.text);
-        }
-    }
+            string[] words = input.text.Split(' ');
 
-    private void GetSprite(string url, Action<string> onError, Action<Sprite> onSuccess)
-    {
-        StartCoroutine(GetSpriteCoroutine(url, onError, onSuccess));
-    }
-    private IEnumerator GetSpriteCoroutine(string url, Action<string> onError, Action<Sprite> onSuccess)
-    {
-        using UnityWebRequest unityWebRequest = UnityWebRequestTexture.GetTexture(url);
-            yield return unityWebRequest.SendWebRequest();
-
-        if (unityWebRequest.result == UnityWebRequest.Result.ConnectionError || unityWebRequest.result == UnityWebRequest.Result.ProtocolError)
-        {
-            onError(unityWebRequest.error);
-        }
-        else
-        {
-            if (unityWebRequest.downloadHandler is not DownloadHandlerTexture downloadHandlerTexture)
+            if (CoreRequest.DoesStringExist(responseText.text, words))
             {
-                onError("Failed to locate sprite from given url.");
+                Debug.Log("Word found in the above HTML.");
+                findInputTextFieldImage.color = Color.green;
             }
             else
             {
-                onSuccess(CoreConvertions.ConvertTexture2DToSprite(downloadHandlerTexture.texture));
+                Debug.Log("Word was not found in the HTML.");
+                findInputTextFieldImage.color = Color.red;
             }
         }
     }
