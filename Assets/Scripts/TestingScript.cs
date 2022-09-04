@@ -9,7 +9,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using PD.Networking;
-using PD.Utils.Algorithms;
+using PD.Logger;
 
 public class TestingScript : MonoBehaviour
 {
@@ -41,7 +41,7 @@ public class TestingScript : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Error: findInputTextField is null");
+            CoreLogger.LogError("Error: findInputTextField is null", gameObjectSource: gameObject);
         }
 
         CoreRequest.Init();
@@ -49,12 +49,12 @@ public class TestingScript : MonoBehaviour
         CoreRequest.GetHTML(GetStatisticsUrl,
             (string error) =>
             {
-                Debug.LogError($"Error: {error}");
+                CoreLogger.LogError($"Error - [HTML]: {error}");
                 responseText.text = error;
             },
             (string success) =>
             {
-                Debug.Log($"Received: {success}");
+                CoreLogger.LogMessage("Received - [HTML]");
                 responseText.text = success;
             }
         );
@@ -62,13 +62,13 @@ public class TestingScript : MonoBehaviour
         CoreRequest.GetSprite(GetHWLogoImageUrl,
             (string error) =>
             {
-                Debug.LogError($"Error: {error}");
+                CoreLogger.LogError($"Error - [Sprite]: {error}");
                 responseImage.sprite = null;
                 responseTextureText.text = error;
             },
             (Sprite success) =>
             {
-                Debug.Log($"Received: {success.name}");
+                CoreLogger.LogMessage($"Received - [Sprite]: {success}");
                 responseImage.sprite = success;
                 responseTextureText.text = string.Empty;
             }
@@ -79,7 +79,7 @@ public class TestingScript : MonoBehaviour
     {
         if (input.text?.Length == 0 || input.text == null)
         {
-            Debug.LogWarning("Input field was Null or Empty, Algorithm did not run.");
+            CoreLogger.LogWarning("Input field was Null or Empty, Algorithm did not run.");
             findInputTextFieldImage.color = Color.white;
         }
         else
@@ -88,12 +88,12 @@ public class TestingScript : MonoBehaviour
 
             if (CoreRequest.DoesStringExist(responseText.text, words))
             {
-                Debug.Log("Word found in the above HTML.");
+                CoreLogger.LogMessage("Word found in the above HTML.");
                 findInputTextFieldImage.color = Color.green;
             }
             else
             {
-                Debug.Log("Word was not found in the HTML.");
+                CoreLogger.LogMessage("Word was not found in the HTML.");
                 findInputTextFieldImage.color = Color.red;
             }
         }
