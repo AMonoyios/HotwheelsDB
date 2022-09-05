@@ -23,11 +23,11 @@ public class DeveloperController : MonoBehaviour
     private GameObject devLogPrefab;
 
     private bool devMode = false;
+    public bool GetAppMode { get { return devMode; }}
 
     private void Start()
     {
         #if DEVELOPMENT_BUILD || UNITY_EDITOR
-            Debug.Log("DEV MODE");
             devMode = true;
         #endif
 
@@ -36,6 +36,12 @@ public class DeveloperController : MonoBehaviour
         CoreLogger.SetDevMode(devMode);
 
         Application.logMessageReceived += OnLogMessageReceived;
+
+        if (devMode)
+            CoreLogger.LogMessage("Game mode: DEV MODE");
+        else
+            CoreLogger.LogMessage("Game mode: Normal MODE");
+
     }
 
     private void OnLogMessageReceived(string msg, string stackTrace, LogType type)
@@ -43,7 +49,7 @@ public class DeveloperController : MonoBehaviour
         if (devMode)
         {
             GameObject logGameObject = Instantiate(devLogPrefab, devLogsContent);
-            logGameObject.GetComponent<TextMeshProUGUI>().text = msg;
+            logGameObject. <TextMeshProUGUI>().text = msg;
         }
     }
 

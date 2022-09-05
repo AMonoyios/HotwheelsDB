@@ -50,7 +50,15 @@ MonoBehaviour:
     changeLog:
     - name: Add a logger
       desc: 
-      state: 2
+      state: 4
       isVisibleInInspector: 1
     state: 1
+    isVisibleInInspector: 0
+  - name: 0.0.4
+    changeLog:
+    - name: Make it possible to test every url
+      desc: 
+      state: 1
+      isVisibleInInspector: 1
+    state: 0
     isVisibleInInspector: 1

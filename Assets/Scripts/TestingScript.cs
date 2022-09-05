@@ -13,89 +13,92 @@ using PD.Logger;
 
 public class TestingScript : MonoBehaviour
 {
-    [Header("HTML")]
+    [Header("Raw Data")]
     [SerializeField]
-    private TextMeshProUGUI responseText;
+    private TextMeshProUGUI rawDataOutput;
 
-    [Header("Image")]
+    [Header("Find String")]
+    [SerializeField]
+    private TextMeshProUGUI findStringTMP;
+
+    [Header("Image Response")]
     [SerializeField]
     private Image responseImage;
     [SerializeField]
-    private TextMeshProUGUI responseTextureText;
-
-    [Header("Find")]
-    [SerializeField]
-    private TMP_InputField findInputTextField;
-    private Image findInputTextFieldImage;
-
-    private static string GetHomeUrl => "https://hotwheels.fandom.com/wiki/Hot_Wheels";
-    private static string GetStatisticsUrl => "https://hotwheels.fandom.com/wiki/Special:Statistics";
-    private static string GetHWLogoImageUrl => "https://static.wikia.nocookie.net/hotwheels/images/e/e6/Site-logo.png/revision/latest?cb=20210601150811";
-    private static string GetStatisticsTableID => "wikitable mw-statistics-table";
+    private TextMeshProUGUI responseImageTMP;
 
     private void Start()
     {
-        if (findInputTextField != null)
-        {
-            findInputTextFieldImage = findInputTextField.GetComponent<Image>();
-        }
-        else
-        {
-            CoreLogger.LogError("Error: findInputTextField is null", gameObjectSource: gameObject);
-        }
-
         CoreRequest.Init();
+    }
 
-        CoreRequest.GetHTML(GetStatisticsUrl,
+    public void FetchRawDataFromURL(TMP_InputField input)
+    {
+        CoreRequest.GetRawDataFrom(input.text,
             (string error) =>
             {
-                CoreLogger.LogError($"Error - [HTML]: {error}");
-                responseText.text = error;
+                CoreLogger.LogError($"Error: [RawData] {error}");
+                rawDataOutput.text = error;
             },
             (string success) =>
             {
-                CoreLogger.LogMessage("Received - [HTML]");
-                responseText.text = success;
-            }
-        );
-
-        CoreRequest.GetSprite(GetHWLogoImageUrl,
-            (string error) =>
-            {
-                CoreLogger.LogError($"Error - [Sprite]: {error}");
-                responseImage.sprite = null;
-                responseTextureText.text = error;
-            },
-            (Sprite success) =>
-            {
-                CoreLogger.LogMessage($"Received - [Sprite]: {success}");
-                responseImage.sprite = success;
-                responseTextureText.text = string.Empty;
+                CoreLogger.LogMessage("Success: [RawData] responce successful");
+                rawDataOutput.text = success;
             }
         );
     }
 
+    /// <summary>
+    ///     Finds a string in text using Aho-Corasick algorithm.
+    ///     Is used in SampleScene > FindStringButton.
+    /// </summary>
+    /// <param name="input">
+    ///     Target TMP text field.
+    /// </param>
+    /// <returns>
+    ///     Will return a color depending if string was found or not.
+    /// </returns>
     public void FindString(TMP_InputField input)
     {
+        Image inputImage = input.GetComponent<Image>();
+
         if (input.text?.Length == 0 || input.text == null)
         {
             CoreLogger.LogWarning("Input field was Null or Empty, Algorithm did not run.");
-            findInputTextFieldImage.color = Color.white;
+            inputImage.color = Color.white;
         }
         else
         {
             string[] words = input.text.Split(' ');
 
-            if (CoreRequest.DoesStringExist(responseText.text, words))
+            if (CoreRequest.DoesStringExist(findStringTMP.text, words))
             {
                 CoreLogger.LogMessage("Word found in the above HTML.");
-                findInputTextFieldImage.color = Color.green;
+                inputImage.color = Color.green;
             }
             else
             {
                 CoreLogger.LogMessage("Word was not found in the HTML.");
-                findInputTextFieldImage.color = Color.red;
+                inputImage.color = Color.red;
             }
         }
+    }
+
+    public void FetchSpriteFromURL(TMP_InputField input)
+    {
+        CoreRequest.GetSprite(input.text,
+            (string error) =>
+            {
+                CoreLogger.LogError($"Error - [Sprite]: {error}");
+                responseImage.sprite = null;
+                responseImageTMP.text = error;
+            },
+            (Sprite success) =>
+            {
+                CoreLogger.LogMessage($"Received - [Sprite]: {success}");
+                responseImage.sprite = success;
+                responseImageTMP.text = string.Empty;
+            }
+        );
     }
 }
