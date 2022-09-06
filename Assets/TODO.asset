@@ -61,4 +61,4 @@ MonoBehaviour:
       state: 1
       isVisibleInInspector: 1
     state: 0
-    isVisibleInInspector: 1
+    isVisibleInInspector: 0

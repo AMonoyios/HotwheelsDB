@@ -37,12 +37,12 @@ public class TestingScript : MonoBehaviour
         CoreRequest.GetRawDataFrom(input.text,
             (string error) =>
             {
-                CoreLogger.LogError($"Error: [RawData] {error}");
+                CoreLogger.LogError(error);
                 rawDataOutput.text = error;
             },
             (string success) =>
             {
-                CoreLogger.LogMessage("Success: [RawData] responce successful");
+                CoreLogger.LogMessage($"Succesfully fetched raw data from URL {input.text}.");
                 rawDataOutput.text = success;
             }
         );
@@ -73,12 +73,12 @@ public class TestingScript : MonoBehaviour
 
             if (CoreRequest.DoesStringExist(findStringTMP.text, words))
             {
-                CoreLogger.LogMessage("Word found in the above HTML.");
+                CoreLogger.LogMessage($"Word(s) {input.text} found in the above RawData.");
                 inputImage.color = Color.green;
             }
             else
             {
-                CoreLogger.LogMessage("Word was not found in the HTML.");
+                CoreLogger.LogMessage($"Word(s) {input.text} found in the above RawData.");
                 inputImage.color = Color.red;
             }
         }
@@ -89,13 +89,13 @@ public class TestingScript : MonoBehaviour
         CoreRequest.GetSprite(input.text,
             (string error) =>
             {
-                CoreLogger.LogError($"Error - [Sprite]: {error}");
+                CoreLogger.LogError(error);
                 responseImage.sprite = null;
                 responseImageTMP.text = error;
             },
             (Sprite success) =>
             {
-                CoreLogger.LogMessage($"Received - [Sprite]: {success}");
+                CoreLogger.LogMessage($"Sprite {success.name} was successfully fetched from {input.text}.");
                 responseImage.sprite = success;
                 responseImageTMP.text = string.Empty;
             }
