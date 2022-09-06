@@ -10,6 +10,7 @@ using TMPro;
 using UnityEngine.UI;
 using PD.Networking;
 using PD.Logger;
+using Newtonsoft.Json;
 
 public class TestingScript : MonoBehaviour
 {
@@ -42,6 +43,12 @@ public class TestingScript : MonoBehaviour
         CoreRequest.Init();
 
         AddButtonListeners();
+
+        CoreRequest.GetRawDataFrom(
+            "https://hotwheels.fandom.com/api.php?action=parse&page=Bone_Shaker&format=json",
+            (string error) => CoreLogger.LogError(error),
+            (string result) => CoreLogger.LogMessage(JsonConvert.DeserializeObject<TestParseResponse>(result).ToString())
+        );
     }
 
     private void AddButtonListeners()
