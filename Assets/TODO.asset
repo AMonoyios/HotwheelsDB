@@ -90,7 +90,9 @@ MonoBehaviour:
       state: 0
       isVisibleInInspector: 0
     - name: Bug fixing
-      desc: '- Fix notification channel tracking'
+      desc: '- Fix notification channel tracking - ok
+
+        - '
       state: 1
       isVisibleInInspector: 1
     state: 0
