@@ -264,7 +264,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &239777510
 GameObject:
@@ -387,7 +387,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 313384408}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: TestingScript, Assembly-CSharp
         m_MethodName: FindString
         m_Mode: 2
@@ -437,54 +437,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 281267725}
   m_CullTransparentMesh: 1
---- !u!1 &313384407
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 313384409}
-  - component: {fileID: 313384408}
-  m_Layer: 0
-  m_Name: Controller
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &313384408
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 313384407}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ee62d435007814b4e9afc5c328132ce6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rawDataOutput: {fileID: 2009012483}
-  findStringTMP: {fileID: 321131912}
-  responseImage: {fileID: 102728979}
-  responseImageTMP: {fileID: 594490943}
---- !u!4 &313384409
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 313384407}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &321131910
 GameObject:
   m_ObjectHideFlags: 0
@@ -641,7 +593,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 840110685282824676, guid: 983e3f0a11529e245af6a03bc12d7183, type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 840110685282824676, guid: 983e3f0a11529e245af6a03bc12d7183, type: 3}
       propertyPath: m_AnchorMax.x
@@ -839,7 +791,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 313384408}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: TestingScript, Assembly-CSharp
         m_MethodName: FetchRawDataFromURL
         m_Mode: 2
@@ -971,7 +923,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &585412813
 GameObject:
@@ -1595,6 +1547,7 @@ GameObject:
   - component: {fileID: 796681103}
   - component: {fileID: 796681102}
   - component: {fileID: 796681101}
+  - component: {fileID: 796681104}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -1617,7 +1570,7 @@ RectTransform:
   - {fileID: 959625234}
   - {fileID: 1261488371}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1685,6 +1638,22 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &796681104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 796681099}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee62d435007814b4e9afc5c328132ce6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rawDataOutput: {fileID: 2009012483}
+  findStringTMP: {fileID: 321131912}
+  responseImage: {fileID: 102728979}
+  responseImageTMP: {fileID: 594490943}
 --- !u!1 &861035489
 GameObject:
   m_ObjectHideFlags: 0
@@ -2060,7 +2029,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 313384408}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: TestingScript, Assembly-CSharp
         m_MethodName: FetchSpriteFromURL
         m_Mode: 2
