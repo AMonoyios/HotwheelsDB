@@ -13,15 +13,25 @@ using PD.Logger;
 
 public class TestingScript : MonoBehaviour
 {
-    [Header("Raw Data")]
+    [Header("Buttons")]
+    [SerializeField]
+    private Button fetchRawDataBtn;
+    [SerializeField]
+    private Button findStringBtn;
+    [SerializeField]
+    private Button fetchImageBtn;
+
+    [Header("Input fields")]
+    [SerializeField]
+    private TMP_InputField rawDataURLInputField;
+    [SerializeField]
+    private TMP_InputField findStringInputField;
+    [SerializeField]
+    private TMP_InputField imageURLInputField;
+
+    [Header("Response")]
     [SerializeField]
     private TextMeshProUGUI rawDataOutput;
-
-    [Header("Find String")]
-    [SerializeField]
-    private TextMeshProUGUI findStringTMP;
-
-    [Header("Image Response")]
     [SerializeField]
     private Image responseImage;
     [SerializeField]
@@ -30,8 +40,23 @@ public class TestingScript : MonoBehaviour
     private void Start()
     {
         CoreRequest.Init();
+
+        AddButtonListeners();
     }
 
+    private void AddButtonListeners()
+    {
+        fetchRawDataBtn.onClick.AddListener(() => FetchRawDataFromURL(rawDataURLInputField));
+        findStringBtn.onClick.AddListener(() => FindString(findStringInputField));
+        fetchImageBtn.onClick.AddListener(() => FetchSpriteFromURL(imageURLInputField));
+    }
+
+    /// <summary>
+    ///     Fetching raw data from given URL.
+    /// </summary>
+    /// <param name="input">
+    ///     The URL to fetch the raw data from.
+    /// </param>
     public void FetchRawDataFromURL(TMP_InputField input)
     {
         CoreRequest.GetRawDataFrom(input.text,
@@ -55,9 +80,6 @@ public class TestingScript : MonoBehaviour
     /// <param name="input">
     ///     Target TMP text field.
     /// </param>
-    /// <returns>
-    ///     Will return a color depending if string was found or not.
-    /// </returns>
     public void FindString(TMP_InputField input)
     {
         Image inputImage = input.GetComponent<Image>();
@@ -71,7 +93,7 @@ public class TestingScript : MonoBehaviour
         {
             string[] words = input.text.Split(' ');
 
-            if (CoreRequest.DoesStringExist(findStringTMP.text, words))
+            if (CoreRequest.DoesStringExist(findStringInputField.text, words))
             {
                 CoreLogger.LogMessage($"Word(s) {input.text} found in the above RawData.");
                 inputImage.color = Color.green;
@@ -84,6 +106,12 @@ public class TestingScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    ///     Fetching an image from a given URL.
+    /// </summary>
+    /// <param name="input">
+    ///     The image URL.
+    /// </param>
     public void FetchSpriteFromURL(TMP_InputField input)
     {
         CoreRequest.GetSprite(input.text,

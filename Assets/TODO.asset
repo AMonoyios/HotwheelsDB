@@ -58,6 +58,18 @@ MonoBehaviour:
     changeLog:
     - name: Make it possible to test every url
       desc: 
+      state: 4
+      isVisibleInInspector: 1
+    - name: Implement Singletons
+      desc: MonoPersistentSingleton & Singleton
+      state: 4
+      isVisibleInInspector: 1
+    state: 1
+    isVisibleInInspector: 0
+  - name: 0.0.5
+    changeLog:
+    - name: Refactor DEV tools
+      desc: 
       state: 1
       isVisibleInInspector: 1
     state: 0

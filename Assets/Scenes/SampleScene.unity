@@ -386,19 +386,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 281267728}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: TestingScript, Assembly-CSharp
-        m_MethodName: FindString
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 2062235285}
-          m_ObjectArgumentAssemblyTypeName: TMPro.TMP_InputField, Unity.TextMeshPro
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &281267728
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -790,19 +778,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 416309619}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: TestingScript, Assembly-CSharp
-        m_MethodName: FetchRawDataFromURL
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 622272209}
-          m_ObjectArgumentAssemblyTypeName: TMPro.TMP_InputField, Unity.TextMeshPro
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &416309619
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1650,8 +1626,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee62d435007814b4e9afc5c328132ce6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fetchRawDataBtn: {fileID: 416309618}
+  findStringBtn: {fileID: 281267727}
+  fetchImageBtn: {fileID: 917810154}
+  rawDataURLInputField: {fileID: 622272209}
+  findStringInputField: {fileID: 2062235285}
+  imageURLInputField: {fileID: 1483899573}
   rawDataOutput: {fileID: 2009012483}
-  findStringTMP: {fileID: 321131912}
   responseImage: {fileID: 102728979}
   responseImageTMP: {fileID: 594490943}
 --- !u!1 &861035489
@@ -2028,19 +2009,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 917810155}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: TestingScript, Assembly-CSharp
-        m_MethodName: FetchSpriteFromURL
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 1483899573}
-          m_ObjectArgumentAssemblyTypeName: TMPro.TMP_InputField, Unity.TextMeshPro
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &917810155
 MonoBehaviour:
   m_ObjectHideFlags: 0
