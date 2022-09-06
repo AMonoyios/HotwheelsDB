@@ -83,11 +83,15 @@ MonoBehaviour:
 
         - Console
         tab'
-      state: 1
-      isVisibleInInspector: 1
+      state: 0
+      isVisibleInInspector: 0
     - name: Implement Basic Api communication
       desc: 
       state: 0
+      isVisibleInInspector: 0
+    - name: Bug fixing
+      desc: '- Fix notification channel tracking'
+      state: 1
       isVisibleInInspector: 1
     state: 0
     isVisibleInInspector: 1
