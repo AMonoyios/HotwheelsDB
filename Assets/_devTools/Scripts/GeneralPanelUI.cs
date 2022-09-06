@@ -32,16 +32,13 @@ public sealed class GeneralPanelUI : MonoBehaviour
     private Button restartButton;
     [SerializeField]
     private Button testNotificationButton;
-
-    private void Start()
-    {
-        //TODO: when the code generation for automatic channel tracking is implemented replace this with just the string "TestingChannel" in the place of NotificationChannelRepo.TestingChannelID
-        AndroidNotifications.CreateNotificationChannel(NotificationChannelRepo.TestingChannelID, "Testing Channel", "Channel created for testing purposes only.");
-    }
+    [SerializeField]
+    private Button createTestChannelBtn;
 
     private void Awake()
     {
         restartButton.onClick.AddListener(() => RestartApp());
+        createTestChannelBtn.onClick.AddListener(() => CreateTestChannel());
         testNotificationButton.onClick.AddListener(() => TestNotification());
     }
 
@@ -53,5 +50,11 @@ public sealed class GeneralPanelUI : MonoBehaviour
     public static void TestNotification()
     {
         AndroidNotifications.CreateNotification("Test", "This is a test notification.", System.DateTime.Now.AddSeconds(15), NotificationChannelRepo.TestingChannelID);
+    }
+
+    public static void CreateTestChannel()
+    {
+        //TODO: when the code generation for automatic channel tracking is implemented replace this with just the string "TestingChannel" in the place of NotificationChannelRepo.TestingChannelID
+        AndroidNotifications.CreateNotificationChannel(NotificationChannelRepo.TestingChannelID, "Testing Channel", "Channel created for testing purposes only.");
     }
 }
