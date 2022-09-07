@@ -6,9 +6,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
 using UnityEngine.UI;
-using PD.Android;
+using TMPro;
+using PD.Logger;
 
 /// <summary>
 ///     Controls the General Panel UI
@@ -24,6 +24,7 @@ public sealed class DevGeneralPanelUI : MonoBehaviour
     [Header("Time info")]
     [SerializeField]
     private TextMeshProUGUI localTimeTxt;
+    private string localTimeCached;
     [SerializeField]
     private TextMeshProUGUI lastServerUpdateTimeTxt;
 
@@ -34,6 +35,30 @@ public sealed class DevGeneralPanelUI : MonoBehaviour
     private void Awake()
     {
         restartButton.onClick.AddListener(() => RestartApp());
+        InitGeneralInfo();
+    }
+
+    private void InitGeneralInfo()
+    {
+        versionTxt.text += Application.version;
+        userIDTxt.text += SystemInfo.deviceName;
+        localTimeCached = localTimeTxt.text;
+        localTimeTxt.text += GameManager.GetLocalTime();
+        //FIXME: when API is set replace this with the last update of the api page.
+        lastServerUpdateTimeTxt.text += GameManager.GetLocalDate() + " | " + GameManager.GetLocalTime();
+        CoreLogger.LogMessage("Initializing general info.");
+    }
+
+    private void OnEnable()
+    {
+        UpdateTimeInfo();
+    }
+
+    private void UpdateTimeInfo()
+    {
+        //FIXME: When API is set add the lastServerUpdateTimeTxt here.
+        localTimeTxt.text = localTimeCached + GameManager.GetLocalDate() + " | " + GameManager.GetLocalTime();
+        CoreLogger.LogMessage("Updating time info.");
     }
 
     public static void RestartApp()

@@ -82,6 +82,16 @@ public sealed class DevToolsUI : MonoPersistentSingleton<DevToolsUI>
             CoreLogger.LogMessage("Game mode: Normal MODE");
     }
 
+    protected override void OnDestroy()
+    {
+        // This is to prevent exception errors.
+        // Because unity destroys gameobjects randomly when closing game we cannot control if
+        // the gameobject that fires the log exists or if it has its parent destroyed, or even
+        // having the main log manager (this) destroyed before the log was succesfully completed
+        // the cycle.
+        Application.logMessageReceived -= consolePanelUI.OnLogMessageReceived;
+    }
+
     protected override void Awake()
     {
         base.Awake();

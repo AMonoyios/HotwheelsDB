@@ -3,6 +3,8 @@
  * GitHub: https://github.com/AMonoyios?tab=repositories
  */
 
+using System;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -11,14 +13,24 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public sealed class GameManager : MonoPersistentSingleton<GameManager>
 {
-    private static bool inDevMode = false;
+    /// <summary>
+    ///     This will force the app to work on DEV mode.
+    /// </summary>
+    public static void ForceDevMode(bool state)
+    {
+        if (state)
+        {
+            SetDevMode(true);
+        }
+    }
 
+    private static bool inDevMode = false;
     /// <summary>
     ///     Sets the dev mode
     /// </summary>
-    public static void SetDevMode(bool devMode)
+    public static void SetDevMode(bool state)
     {
-        inDevMode = devMode;
+        inDevMode = state;
     }
 
     /// <summary>
@@ -32,11 +44,29 @@ public sealed class GameManager : MonoPersistentSingleton<GameManager>
         }
     }
 
+    public static string GetLocalTime()
+    {
+        return DateTime.UtcNow.ToLongTimeString();
+    }
+
+    public static string GetLocalDate()
+    {
+        return DateTime.UtcNow.ToLongDateString();
+    }
+
     /// <summary>
     ///     Restarts the game
     /// </summary>
     public static void Restart()
     {
+        // Start from splash
+        SceneManager.LoadScene(0, LoadSceneMode.Single);
+        SceneManager.SetActiveScene(SceneManager.GetSceneAt(0));
+
+        // if in dev mode and having it open close it
+        if (IsDevMode && DevToolsUI.instance.isActiveAndEnabled)
+            DevToolsUI.instance.ShowHide();
+
         // Close all scenes
         for(int i = 0; i < SceneManager.sceneCount; i ++)
         {
@@ -46,9 +76,6 @@ public sealed class GameManager : MonoPersistentSingleton<GameManager>
                 SceneManager.UnloadSceneAsync(scene);
             }
         }
-
-        // Start from splash
-        SceneManager.LoadScene(0);
     }
 
     /// <summary>

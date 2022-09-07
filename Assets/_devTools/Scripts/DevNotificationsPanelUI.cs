@@ -14,7 +14,6 @@ using PD.Logger;
 /// </summary>
 public sealed class DevNotificationsPanelUI : MonoBehaviour
 {
-
     [Header("Channels")]
     [SerializeField]
     private TextMeshProUGUI channelCountTxt;
@@ -46,9 +45,12 @@ public sealed class DevNotificationsPanelUI : MonoBehaviour
         UpdateChannelsList();
     }
 
-    void OnEnable()
+    private void LateUpdate()
     {
-        newChannelBtn.interactable = channelIDTxt.text == null || channelTitleTxt.text == null || channelDescriptionTxt.text == null;
+        if (GameManager.IsDevMode && this.gameObject.activeInHierarchy)
+        {
+            newChannelBtn.interactable = channelIDTxt.text != "" && channelTitleTxt.text != "" && channelDescriptionTxt.text != "";
+        }
     }
 
     public void InitNotificationCenter()

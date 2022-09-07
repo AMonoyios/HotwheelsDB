@@ -82,25 +82,31 @@ MonoBehaviour:
         - added notification tab
 
         -
-        major core android notifications code added
-
-        - most of the channel
-        actions for dev are done
+        added full support for android notification channels
 
 '
       state: 1
-      isVisibleInInspector: 1
+      isVisibleInInspector: 0
     - name: Implement Basic Api communication
       desc: 
       state: 0
       isVisibleInInspector: 0
     - name: Bug fixing
-      desc: '- Fix notification channel tracking - ok'
+      desc: '- Fix notification channel tracking - ok
+
+        - Fixed issue with
+        exception messages on game quit - ok
+
+        - Fix restart game not working'
       state: 1
       isVisibleInInspector: 0
     - name: Convert notification channel id to code generated
       desc: 
       state: 0
+      isVisibleInInspector: 0
+    - name: Added a working splash screen
+      desc: 
+      state: 4
       isVisibleInInspector: 0
     state: 0
     isVisibleInInspector: 1
