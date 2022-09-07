@@ -1,14 +1,5 @@
-/*
- * Script developed by Andreas Monoyios
- * GitHub: https://github.com/AMonoyios?tab=repositories
- */
-
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 /// <summary>
-///     [What does this NotificationChannelRepo do]
+///     This script hold all IDs for notifications
 /// </summary>
 public sealed class NotificationChannelRepo
 {

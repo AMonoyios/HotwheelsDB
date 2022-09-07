@@ -1,6 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+/*
+ * Script developed by Andreas Monoyios
+ * GitHub: https://github.com/AMonoyios?tab=repositories
+ */
+
 using Unity.Notifications.Android;
 using PD.Logger;
 

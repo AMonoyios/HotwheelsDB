@@ -77,23 +77,30 @@ MonoBehaviour:
   - name: 0.1.0
     changeLog:
     - name: Finish dev tools button actions
-      desc: '- Startup process tab
+      desc: '- improved menu navigation
 
-        - Addressables tab
+        - added notification tab
 
-        - Console
-        tab'
-      state: 0
-      isVisibleInInspector: 0
+        -
+        major core android notifications code added
+
+        - most of the channel
+        actions for dev are done
+
+'
+      state: 1
+      isVisibleInInspector: 1
     - name: Implement Basic Api communication
       desc: 
       state: 0
       isVisibleInInspector: 0
     - name: Bug fixing
-      desc: '- Fix notification channel tracking - ok
-
-        - '
+      desc: '- Fix notification channel tracking - ok'
       state: 1
-      isVisibleInInspector: 1
+      isVisibleInInspector: 0
+    - name: Convert notification channel id to code generated
+      desc: 
+      state: 0
+      isVisibleInInspector: 0
     state: 0
     isVisibleInInspector: 1

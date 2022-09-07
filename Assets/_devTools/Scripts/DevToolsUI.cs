@@ -3,10 +3,10 @@
  * GitHub: https://github.com/AMonoyios?tab=repositories
  */
 
-using PD.Logger;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
+using PD.Logger;
 
 /// <summary>
 ///     Manages all dev actions, this is a MonoPersistentSingleton.
@@ -18,6 +18,7 @@ public sealed class DevToolsUI : MonoPersistentSingleton<DevToolsUI>
     [SerializeField]
     private Button closeBtn;
 
+#region Menu
     [Header("Menu")]
     [SerializeField]
     private RectTransform menu;
@@ -25,12 +26,16 @@ public sealed class DevToolsUI : MonoPersistentSingleton<DevToolsUI>
     private Button menuShowBtn;
     [SerializeField]
     private Button menuHideBtn;
+#endregion
 
+#region Buttons
     [Header("Menu buttons")]
     [SerializeField]
     private Button showBtn;
     [SerializeField]
     private Button generalBtn;
+    [SerializeField]
+    private Button notificationsBtn;
     [SerializeField]
     private Button startupBtn;
     [SerializeField]
@@ -39,26 +44,33 @@ public sealed class DevToolsUI : MonoPersistentSingleton<DevToolsUI>
     private Button consoleBtn;
     [SerializeField]
     private Button closeMenuBtn;
+#endregion
 
+#region Panels
     [Header("Panels")]
     [SerializeField]
     private GameObject mainPanel;
     [SerializeField]
     private GameObject generalPanel;
     [SerializeField]
+    private GameObject notificationsPanel;
+    [SerializeField]
     private GameObject startupPanel;
     [SerializeField]
     private GameObject addressablesPanel;
     [SerializeField]
     private GameObject consolePanel;
+#endregion
 
+#region Other
     [Header("Other")]
     [SerializeField]
     private TextMeshProUGUI gameModeStatusTxt;
     [SerializeField]
-    private ConsolePanelUI consolePanelUI;
+    private DevConsolePanelUI consolePanelUI;
 
     private static bool IsVisible => Instance.mainPanel.activeSelf;
+#endregion
 
     private void Start()
     {
@@ -81,10 +93,11 @@ public sealed class DevToolsUI : MonoPersistentSingleton<DevToolsUI>
         if (GameManager.IsDevMode)
         {
             showBtn.onClick.AddListener(() => ShowHide());
-            generalBtn.onClick.AddListener(() => ShowGeneralPanel());
-            startupBtn.onClick.AddListener(() => ShowStartupPanel());
-            addressablesBtn.onClick.AddListener(() => ShowAddressablesPanel());
-            consoleBtn.onClick.AddListener(() => ShowConsolePanel());
+            generalBtn.onClick.AddListener(() => ShowPanel(generalPanel, "General"));
+            notificationsBtn.onClick.AddListener(() => ShowPanel(notificationsPanel, "Notifications"));
+            startupBtn.onClick.AddListener(() => ShowPanel(startupPanel, "Startup"));
+            addressablesBtn.onClick.AddListener(() => ShowPanel(addressablesPanel, "Addressables"));
+            consoleBtn.onClick.AddListener(() => ShowPanel(consolePanel, "Console"));
 
             closeMenuBtn.onClick.AddListener(() => SetMenuVisible(false));
 
@@ -132,14 +145,14 @@ public sealed class DevToolsUI : MonoPersistentSingleton<DevToolsUI>
         menu.gameObject.SetActive(visible);
     }
 
-    public static void ShowHide()
+    public void ShowHide()
     {
         Instance.HideAllPanels();
         Instance.mainPanel.SetActive(!IsVisible);
 
         if (Instance.mainPanel.activeSelf)
         {
-            Instance.ShowGeneralPanel();
+            Instance.ShowPanel(generalPanel, "General");
         }
     }
 
@@ -148,47 +161,18 @@ public sealed class DevToolsUI : MonoPersistentSingleton<DevToolsUI>
         title.text = "";
 
         generalPanel.SetActive(false);
+        notificationsPanel.SetActive(false);
         startupPanel.SetActive(false);
         addressablesPanel.SetActive(false);
         consolePanel.SetActive(false);
     }
 
-    public void ShowGeneralPanel()
+    public void ShowPanel(GameObject panel, string title)
     {
         HideAllPanels();
-        generalPanel.SetActive(true);
+        panel.SetActive(true);
 
-        title.text = "General";
-
-        SetMenuVisible(false);
-    }
-
-    public void ShowStartupPanel()
-    {
-        HideAllPanels();
-        startupPanel.SetActive(true);
-
-        title.text = "Startup";
-
-        SetMenuVisible(false);
-    }
-
-    public void ShowAddressablesPanel()
-    {
-        HideAllPanels();
-        addressablesPanel.SetActive(true);
-
-        title.text = "Addressables";
-
-        SetMenuVisible(false);
-    }
-
-    public void ShowConsolePanel()
-    {
-        HideAllPanels();
-        consolePanel.SetActive(true);
-
-        title.text = "Console";
+        this.title.text = title;
 
         SetMenuVisible(false);
     }

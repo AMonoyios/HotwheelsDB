@@ -103,7 +103,7 @@ GameObject:
   - component: {fileID: 2012929075382335202}
   - component: {fileID: 2913417146416884813}
   m_Layer: 5
-  m_Name: Log
+  m_Name: LogUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -10,7 +10,7 @@ using UnityEngine;
 /// <summary>
 ///     Controls the Console Panel UI
 /// </summary>
-public sealed class ConsolePanelUI : MonoBehaviour
+public sealed class DevConsolePanelUI : MonoBehaviour
 {
     [SerializeField]
     private GameObject logPrefab;
