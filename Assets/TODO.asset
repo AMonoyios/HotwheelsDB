@@ -108,5 +108,9 @@ MonoBehaviour:
       desc: 
       state: 4
       isVisibleInInspector: 0
+    - name: Added Dev editor window
+      desc: '- Can change scenes for now - wip'
+      state: 1
+      isVisibleInInspector: 1
     state: 0
     isVisibleInInspector: 1

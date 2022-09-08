@@ -12,8 +12,6 @@ using UnityEngine;
 public sealed class MonoPersistentCanvasManager : MonoPersistentSingleton<MonoPersistentCanvasManager>
 {
     [SerializeField]
-    private Canvas persistentCanvas;
-    [SerializeField]
     private Transform contentParentTransform;
 
     [Header("Popups")]
@@ -23,7 +21,7 @@ public sealed class MonoPersistentCanvasManager : MonoPersistentSingleton<MonoPe
 
     public void ShowConnectionErrorPopup()
     {
-        persistentCanvas.gameObject.SetActive(true);
+        contentParentTransform.gameObject.SetActive(true);
         connectionErrorPopupInstance = Instantiate(connectionErrorPopup, contentParentTransform);
     }
 
@@ -32,7 +30,7 @@ public sealed class MonoPersistentCanvasManager : MonoPersistentSingleton<MonoPe
         if (connectionErrorPopupInstance != null)
         {
             Destroy(connectionErrorPopupInstance);
-            persistentCanvas.gameObject.SetActive(false);
+            contentParentTransform.gameObject.SetActive(false);
         }
 
         lastRequest?.Invoke();
