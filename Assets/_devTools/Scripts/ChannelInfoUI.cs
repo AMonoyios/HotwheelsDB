@@ -33,7 +33,7 @@ public sealed class ChannelInfoUI : MonoBehaviour
 
     public void DeleteChannel()
     {
-        PD.Android.AndroidNotifications.DeleteChannelByID(idTxt.text);
+        SW.Android.AndroidNotifications.DeleteChannelByID(idTxt.text);
         Destroy(gameObject);
     }
 

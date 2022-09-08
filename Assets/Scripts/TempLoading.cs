@@ -1,32 +1,22 @@
 using UnityEngine;
-using PD.Logger;
-using PD.Networking;
+using SW.Logger;
+using SW.Networking;
 using UnityEngine.SceneManagement;
 
 public class TempLoading : MonoBehaviour
 {
     [SerializeField]
     private float rotationSpeed = -50.0f;
-    [SerializeField]
-    private float checkConnectionIntervals = 10.0f;
-    [SerializeField, Range(0, 100)]
-    private int maxConnectionChecks = 20;
-
-    private void OnValidate()
-    {
-        if (checkConnectionIntervals < 0.0f)
-            checkConnectionIntervals = 0.0f;
-    }
 
     private void Start()
     {
-        CoreRequest.Init();
+        CoreNetworking.Init();
 
-        CoreRequest.CheckConnection("https://hotwheels.fandom.com/wiki/Hot_Wheels",
-                                    checkConnectionIntervals,
-                                    maxConnectionChecks,
-                                    (string error) => CoreLogger.LogMessage($"Failed to establish connection: {error}"),
-                                    () => LoadApp());
+        CoreNetworking.CheckConnection("https://hotwheels.fandom.com/wiki/Hot_Wheels",
+                                    CoreNetworking.GetConnectionRetryDelta,
+                                    CoreNetworking.GetMaxConnectionRetry,
+                                    onError: null /*show no connection error popup*/,
+                                    onSuccess: () => LoadApp());
     }
 
     private void Update()

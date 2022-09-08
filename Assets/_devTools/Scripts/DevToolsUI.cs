@@ -6,7 +6,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using PD.Logger;
+using SW.Logger;
 
 /// <summary>
 ///     Manages all dev actions, this is a MonoPersistentSingleton.

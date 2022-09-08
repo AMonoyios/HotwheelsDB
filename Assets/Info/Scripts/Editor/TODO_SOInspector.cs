@@ -6,8 +6,8 @@
 using UnityEngine;
 using UnityEditor;
 
-using PD.Editor;
-using PD.Utils.ResourcesHandler;
+using SW.Editor;
+using SW.Utils.ResourcesHandler;
 
 [CustomEditor(typeof(TODO_ScriptableObject)), CanEditMultipleObjects]
 [InitializeOnLoad]

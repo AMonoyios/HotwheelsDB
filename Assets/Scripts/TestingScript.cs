@@ -8,8 +8,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-using PD.Networking;
-using PD.Logger;
+using SW.Networking;
+using SW.Logger;
 using Newtonsoft.Json;
 
 public class TestingScript : MonoBehaviour
@@ -40,11 +40,11 @@ public class TestingScript : MonoBehaviour
 
     private void Start()
     {
-        CoreRequest.Init();
+        CoreNetworking.Init();
 
         AddButtonListeners();
 
-        CoreRequest.GetRawDataFrom(
+        CoreNetworking.GetRawDataFrom(
             "https://hotwheels.fandom.com/api.php?action=parse&page=Bone_Shaker&format=json",
             (string error) => CoreLogger.LogError(error),
             (string result) => CoreLogger.LogMessage(JsonConvert.DeserializeObject<TestParseResponse>(result).ToString())
@@ -66,7 +66,7 @@ public class TestingScript : MonoBehaviour
     /// </param>
     public void FetchRawDataFromURL(TMP_InputField input)
     {
-        CoreRequest.GetRawDataFrom(input.text,
+        CoreNetworking.GetRawDataFrom(input.text,
             (string error) =>
             {
                 CoreLogger.LogError(error);
@@ -100,7 +100,7 @@ public class TestingScript : MonoBehaviour
         {
             string[] words = input.text.Split(' ');
 
-            if (CoreRequest.DoesStringExist(findStringInputField.text, words))
+            if (CoreNetworking.DoesStringExist(findStringInputField.text, words))
             {
                 CoreLogger.LogMessage($"Word(s) {input.text} found in the above RawData.");
                 inputImage.color = Color.green;
@@ -121,7 +121,7 @@ public class TestingScript : MonoBehaviour
     /// </param>
     public void FetchSpriteFromURL(TMP_InputField input)
     {
-        CoreRequest.GetSprite(input.text,
+        CoreNetworking.GetSprite(input.text,
             (string error) =>
             {
                 CoreLogger.LogError(error);

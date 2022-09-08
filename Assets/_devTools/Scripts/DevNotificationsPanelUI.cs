@@ -6,8 +6,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using PD.Android;
-using PD.Logger;
+using SW.Android;
+using SW.Logger;
 
 /// <summary>
 ///     [What does this DevNotificationsPanelUI do]

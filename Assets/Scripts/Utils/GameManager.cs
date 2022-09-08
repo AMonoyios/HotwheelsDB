@@ -4,7 +4,8 @@
  */
 
 using System;
-using UnityEditor.SceneManagement;
+using SW.Logger;
+using Unity.Notifications.Android;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -13,12 +14,17 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public sealed class GameManager : MonoPersistentSingleton<GameManager>
 {
-    /// <summary>
-    ///     This will force the app to work on DEV mode.
-    /// </summary>
-    public static void ForceDevMode(bool state)
+    [SerializeField]
+    private bool forceDevMode;
+
+    protected override void Awake()
     {
-        if (state)
+        if (AndroidNotificationCenter.Initialize())
+            CoreLogger.LogMessage("Initialized: Android notification center successfully.");
+        else
+            CoreLogger.LogError("Initialized Android notification center FAILED!");
+
+        if (forceDevMode)
         {
             SetDevMode(true);
         }

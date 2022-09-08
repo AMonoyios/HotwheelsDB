@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using PD.Logger;
+using SW.Logger;
 
 /// <summary>
 ///     Controls the General Panel UI

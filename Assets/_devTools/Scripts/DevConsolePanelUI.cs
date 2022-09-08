@@ -3,7 +3,7 @@
  * GitHub: https://github.com/AMonoyios?tab=repositories
  */
 
-using PD.Logger;
+using SW.Logger;
 using TMPro;
 using UnityEngine;
 
