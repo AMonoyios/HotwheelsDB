@@ -85,7 +85,7 @@ MonoBehaviour:
         added full support for android notification channels
 
 '
-      state: 1
+      state: 0
       isVisibleInInspector: 0
     - name: Implement Basic Api communication
       desc: 
@@ -97,7 +97,10 @@ MonoBehaviour:
         - Fixed issue with
         exception messages on game quit - ok
 
-        - Fix restart game not working'
+        - Fix restart game not working
+        - ok
+
+        - Developer tools dont show all scene names - wip'
       state: 1
       isVisibleInInspector: 0
     - name: Convert notification channel id to code generated
@@ -109,8 +112,9 @@ MonoBehaviour:
       state: 4
       isVisibleInInspector: 0
     - name: Added Dev editor window
-      desc: '- Can change scenes for now - wip'
+      desc: "- Can change scenes for now - wip\n- Implement a base editor window
+        that is in core-common that will\n\thave all shared functions - wip"
       state: 1
-      isVisibleInInspector: 1
+      isVisibleInInspector: 0
     state: 0
     isVisibleInInspector: 1

@@ -1,3 +1,8 @@
+/*
+ * Script developed by Andreas Monoyios
+ * GitHub: https://github.com/AMonoyios?tab=repositories
+ */
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,23 +11,9 @@ using SW.Editor;
 using UnityEngine.SceneManagement;
 using UnityEditor.SceneManagement;
 
-public class DeveloperEditorWindow : EditorWindow
+public class DeveloperEditorWindow : BaseDeveloperEditorWindow
 {
-    private int selectedTab = 0;
-    private class SceneInfo
-    {
-        public SceneInfo(int index, string name, SceneAsset scene)
-        {
-            GetIndex = index;
-            GetName = name;
-            GetScene = scene;
-        }
-
-        public string GetName { get; }
-        public int GetIndex { get; }
-        public SceneAsset GetScene { get; }
-    }
-    private readonly Dictionary<int, SceneInfo> scenes = new();
+    //FIXME: Tranfer scene managment to BaseDeveloperEditorWindow
 
     [MenuItem("Window/SW Tools/Developer Window")]
     public static void ShowWindow()
@@ -42,8 +33,10 @@ public class DeveloperEditorWindow : EditorWindow
         }
     }
 
-    private void OnGUI()
+    new private void OnGUI()
     {
+        base.OnGUI();
+
         selectedTab = GUILayout.Toolbar(selectedTab, new string[] {"General", "Scenes"});
 
         switch (selectedTab)
