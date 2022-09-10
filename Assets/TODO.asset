@@ -111,10 +111,14 @@ MonoBehaviour:
       desc: 
       state: 4
       isVisibleInInspector: 0
-    - name: Added Dev editor window
-      desc: "- Can change scenes for now - wip\n- Implement a base editor window
-        that is in core-common that will\n\thave all shared functions - wip"
+    - name: Implement Toolkit Editor window
+      desc: '- Full refactor last version, easier to add tabs and make it project
+        specific.'
       state: 1
       isVisibleInInspector: 0
+    - name: Implement Script Templated
+      desc: 
+      state: 1
+      isVisibleInInspector: 1
     state: 0
     isVisibleInInspector: 1
