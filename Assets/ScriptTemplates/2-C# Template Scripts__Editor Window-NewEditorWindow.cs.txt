@@ -3,6 +3,7 @@
  * GitHub: https://github.com/AMonoyios?tab=repositories
  */
 
+#if UNITY_EDITOR
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,3 +30,5 @@ public class #SCRIPTNAME# : EditorWindow
 		#NOTRIM#
 	}
 }
+#endif
+

@@ -19,15 +19,15 @@ public sealed class GameManager : MonoPersistentSingleton<GameManager>
 
     protected override void Awake()
     {
+        base.Awake();
+
         if (AndroidNotificationCenter.Initialize())
             CoreLogger.LogMessage("Initialized: Android notification center successfully.");
         else
             CoreLogger.LogError("Initialized Android notification center FAILED!");
 
         if (forceDevMode)
-        {
             SetDevMode(true);
-        }
     }
 
     private static bool inDevMode = false;

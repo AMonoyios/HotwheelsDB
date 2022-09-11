@@ -85,11 +85,7 @@ MonoBehaviour:
         added full support for android notification channels
 
 '
-      state: 0
-      isVisibleInInspector: 0
-    - name: Implement Basic Api communication
-      desc: 
-      state: 0
+      state: 4
       isVisibleInInspector: 0
     - name: Bug fixing
       desc: '- Fix notification channel tracking - ok
@@ -100,25 +96,37 @@ MonoBehaviour:
         - Fix restart game not working
         - ok
 
-        - Developer tools dont show all scene names - wip'
-      state: 1
-      isVisibleInInspector: 0
-    - name: Convert notification channel id to code generated
-      desc: 
-      state: 0
+        - Developer tools dont show all scene names - ok'
+      state: 4
       isVisibleInInspector: 0
     - name: Added a working splash screen
       desc: 
       state: 4
       isVisibleInInspector: 0
     - name: Implement Toolkit Editor window
-      desc: '- Full refactor last version, easier to add tabs and make it project
-        specific.'
-      state: 1
+      desc: '- can add and remove tabs easier
+
+        - supports scene managment
+        (no dependencies)'
+      state: 4
       isVisibleInInspector: 0
     - name: Implement Script Templated
+      desc: '- interface
+
+        - editor window'
+      state: 4
+      isVisibleInInspector: 0
+    state: 1
+    isVisibleInInspector: 0
+  - name: 0.1.1
+    changeLog:
+    - name: Convert notification channel id to code generated
       desc: 
-      state: 1
-      isVisibleInInspector: 1
+      state: 0
+      isVisibleInInspector: 0
+    - name: Implement Basic Api communication
+      desc: 
+      state: 0
+      isVisibleInInspector: 0
     state: 0
     isVisibleInInspector: 1

@@ -60,20 +60,23 @@ public sealed class DevNotificationsPanelUI : MonoBehaviour
 
     public void UpdateChannelsList()
     {
-        channelCountTxt.text = AndroidNotifications.GetNotificationChannelCount().ToString();
-
-        foreach (Transform channel in channelsListParentTransform)
+        // delete all notification prefabs
+        foreach (Transform channelPrefab in channelsListParentTransform)
         {
-            CoreLogger.LogMessage($"Deleting {channel.name} channel info prefab...");
-            Destroy(channel.gameObject);
+            CoreLogger.LogMessage($"Deleting channel prefab: {channelPrefab.name}");
+            Destroy(channelPrefab);
         }
 
-        for (int i = 0; i < AndroidNotifications.GetNotificationChannelCount(); i++)
+        // loop through all notification channels and create a prefab for them
+        for (int channelIndex = 0; channelIndex < AndroidNotifications.GetNotificationChannelCount(); channelIndex++)
         {
             GameObject newChannel = Instantiate(channelInfoPrefab, channelsListParentTransform);
-
-            newChannel.GetComponent<ChannelInfoUI>().InitChannel(AndroidNotifications.GetAndroidNotificationChannelByIndex(i));
+            newChannel.GetComponent<ChannelInfoUI>().InitChannel(AndroidNotifications.GetAndroidNotificationChannelByIndex(channelIndex));
+            CoreLogger.LogMessage($"Created channel prefab: {newChannel.name}");
         }
+
+        // fetch the count of the notification channels
+        channelCountTxt.text = AndroidNotifications.GetNotificationChannelCount().ToString();
     }
 
     public void CreateNewChannel(TMP_InputField id, TMP_InputField title, TMP_InputField desc, TMP_Dropdown importance)
