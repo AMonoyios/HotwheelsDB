@@ -37,10 +37,6 @@ public sealed class DevToolsUI : MonoPersistentSingleton<DevToolsUI>
     [SerializeField]
     private Button notificationsBtn;
     [SerializeField]
-    private Button startupBtn;
-    [SerializeField]
-    private Button addressablesBtn;
-    [SerializeField]
     private Button consoleBtn;
     [SerializeField]
     private Button closeMenuBtn;
@@ -54,10 +50,6 @@ public sealed class DevToolsUI : MonoPersistentSingleton<DevToolsUI>
     private GameObject generalPanel;
     [SerializeField]
     private GameObject notificationsPanel;
-    [SerializeField]
-    private GameObject startupPanel;
-    [SerializeField]
-    private GameObject addressablesPanel;
     [SerializeField]
     private GameObject consolePanel;
 #endregion
@@ -105,8 +97,6 @@ public sealed class DevToolsUI : MonoPersistentSingleton<DevToolsUI>
             showBtn.onClick.AddListener(() => ShowHide());
             generalBtn.onClick.AddListener(() => ShowPanel(generalPanel, "General"));
             notificationsBtn.onClick.AddListener(() => ShowPanel(notificationsPanel, "Notifications"));
-            startupBtn.onClick.AddListener(() => ShowPanel(startupPanel, "Startup"));
-            addressablesBtn.onClick.AddListener(() => ShowPanel(addressablesPanel, "Addressables"));
             consoleBtn.onClick.AddListener(() => ShowPanel(consolePanel, "Console"));
 
             closeMenuBtn.onClick.AddListener(() => SetMenuVisible(false));
@@ -172,8 +162,6 @@ public sealed class DevToolsUI : MonoPersistentSingleton<DevToolsUI>
 
         generalPanel.SetActive(false);
         notificationsPanel.SetActive(false);
-        startupPanel.SetActive(false);
-        addressablesPanel.SetActive(false);
         consolePanel.SetActive(false);
     }
 

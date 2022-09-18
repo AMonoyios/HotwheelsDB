@@ -40,15 +40,15 @@ public class TestingScript : MonoBehaviour
 
     private void Start()
     {
-        CoreNetworking.Init();
+        //CoreNetworking.Init();
 
         AddButtonListeners();
 
-        CoreNetworking.GetRawDataFrom(
-            "https://hotwheels.fandom.com/api.php?action=parse&page=Bone_Shaker&format=json",
-            (string error) => CoreLogger.LogError(error),
-            (string result) => CoreLogger.LogMessage(JsonConvert.DeserializeObject<TestParseResponse>(result).ToString())
-        );
+        // CoreNetworking.GetRawDataFrom(
+        //     "https://hotwheels.fandom.com/api.php?action=parse&page=Bone_Shaker&format=json",
+        //     (string error) => CoreLogger.LogError(error),
+        //     (string result) => CoreLogger.LogMessage(JsonConvert.DeserializeObject<TestParseResponse>(result).ToString())
+        // );
     }
 
     private void AddButtonListeners()

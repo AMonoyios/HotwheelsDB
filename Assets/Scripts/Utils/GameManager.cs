@@ -4,6 +4,8 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using SW.Logger;
 using Unity.Notifications.Android;
 using UnityEngine;
@@ -90,5 +92,17 @@ public sealed class GameManager : MonoPersistentSingleton<GameManager>
     public static void Quit()
     {
         Application.Quit();
+    }
+
+    // TODO: Make sceneIndex into a class with all scenes as enums
+    public void LoadScene(int sceneIndex)
+    {
+        MonoPersistentCanvasManager.instance.ShowLoadingPopup(() =>
+        {
+            SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene());
+            SceneManager.LoadSceneAsync(sceneIndex);
+
+            MonoPersistentCanvasManager.instance.HideLoadingPopup();
+        });
     }
 }

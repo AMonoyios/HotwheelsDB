@@ -59,7 +59,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.9019608}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.49019608}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -192,3 +192,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   contentParentTransform: {fileID: 4345575997462013085}
   connectionErrorPopup: {fileID: 7020495049795164647, guid: 0227cf03086258440979ccb882dde76a, type: 3}
+  loadingPopup: {fileID: 8055461457517273327, guid: 97db7529ccb94d24c8b5cc0e0d7d594b, type: 3}
