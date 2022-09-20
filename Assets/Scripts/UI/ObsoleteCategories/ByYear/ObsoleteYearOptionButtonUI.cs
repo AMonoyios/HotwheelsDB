@@ -17,6 +17,7 @@ public sealed class YearOptionButtonUI : MonoBehaviour
     private TextMeshProUGUI yearLabel;
     private string yearUrl;
 
+    // Start is called before the first frame update
     private void Start()
     {
         GetComponent<Button>().onClick.AddListener(() =>
@@ -25,8 +26,13 @@ public sealed class YearOptionButtonUI : MonoBehaviour
 
             Request.RawData(Queries.HotWheelsYearCategory(yearUrl),
                 onError: (error) => CoreLogger.LogError(error),
-                onSuccess: (_) => CoreLogger.LogMessage($"Succesfully fetched data for {yearUrl}.")
-            );
+                onSuccess: (data) =>
+                {
+                    CoreLogger.LogMessage($"Succesfully fetched data for {yearUrl}.");
+
+                    // enable specific year panel
+                    //PanelManager.SetYearPageVisible(data);
+                });
         });
     }
 

@@ -45,18 +45,6 @@ namespace APIRequests
         {
             return $"https://hotwheels.fandom.com/api.php?action=query&list=categorymembers&cmlimit=100&cmtitle={year}&format=json";
         }
-
-        public static string HotWheelsByCollection
-        {
-            get
-            {
-                return "";
-            }
-        }
-        public static string HotWheelsCollection(string collection)
-        {
-            return $"";
-        }
     }
 
     public static class Request
