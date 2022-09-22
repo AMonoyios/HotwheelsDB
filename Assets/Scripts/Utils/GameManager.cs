@@ -97,12 +97,7 @@ public sealed class GameManager : MonoPersistentSingleton<GameManager>
     // TODO: Make sceneIndex into a class with all scenes as enums
     public void LoadScene(int sceneIndex)
     {
-        MonoPersistentCanvasManager.instance.ShowLoadingPopup(() =>
-        {
-            SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene());
-            SceneManager.LoadSceneAsync(sceneIndex);
-
-            MonoPersistentCanvasManager.instance.HideLoadingPopup();
-        });
+        SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene());
+        SceneManager.LoadSceneAsync(sceneIndex);
     }
 }
