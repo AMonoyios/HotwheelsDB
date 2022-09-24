@@ -116,16 +116,20 @@ MonoBehaviour:
     isVisibleInInspector: 0
   - name: 0.1.1
     changeLog:
+    - name: minor fixes on api communication
+      desc: 
+      state: 4
+      isVisibleInInspector: 1
+    state: 1
+    isVisibleInInspector: 0
+  - name: 0.1.2
+    changeLog:
     - name: Implement Basic Api communication
-      desc: 
-      state: 0
-      isVisibleInInspector: 0
-    - name: Convert notification channel id to code generated
-      desc: 
-      state: 0
-      isVisibleInInspector: 0
-    - name: Refactor networking namespace
-      desc: 
+      desc: 'Can request:
+
+        - Raw data
+
+        - Images'
       state: 1
       isVisibleInInspector: 1
     state: 0

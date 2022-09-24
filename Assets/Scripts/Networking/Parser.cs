@@ -1,0 +1,92 @@
+/*
+ * Script developed by Andreas Monoyios
+ * GitHub: https://github.com/AMonoyios?tab=repositories
+ */
+
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using SW.Logger;
+using UnityEngine;
+
+namespace HWAPI
+{
+    public static class Parser
+    {
+        public static List<VersionsTableCarInfo> FromWikitext(string wikitext)
+        {
+            List<string> lines = new(wikitext.Split("|-"));
+            List<VersionsTableCarInfo> entries = new();
+
+            lines.ForEach(line => string.Concat(line.Where(c => !char.IsWhiteSpace(c))));
+
+            foreach (string line in lines)
+            {
+                string newline = line.Trim();
+                if (newline.StartsWith("|"))
+                {
+                    string[] carInfo = newline.Split("\n");
+
+                    for (int carInfoIndex = 0; carInfoIndex < carInfo.Length; carInfoIndex++)
+                    {
+                        // remove line declaration character
+                        if (carInfo[carInfoIndex].StartsWith("|"))
+                            carInfo[carInfoIndex] = carInfo[carInfoIndex][1..];
+
+                        // replace blank line with no info text
+                        if (carInfo[carInfoIndex]?.Length <= 0)
+                            carInfo[carInfoIndex] = "No info";
+                    }
+
+                    // remove 2 characters from the start of the string if it starts with "[["
+                    if (carInfo[12].StartsWith("[["))
+                        carInfo[12] = carInfo[12][2..];
+
+                    // remove 2 characters from the end of the string if it ends with "]]"
+                    if (carInfo[12].EndsWith("]]"))
+                        carInfo[12] = carInfo[12][..^2];
+
+                    // check if raw car data can be splited, otherwise use the template
+                    string[] carInfoPhotoProperties = { "File:Image_Not_Available.jpg" , "50" };
+                    if (carInfo[12].Contains("|"))
+                        carInfoPhotoProperties = carInfo[12].Split("|");
+
+                    // remove 2 last characters if the string ends with "px"
+                    if (carInfoPhotoProperties[1].EndsWith("px"))
+                        carInfoPhotoProperties[1] = carInfoPhotoProperties[1][..^2];
+
+                    Texture2D carInfoPhoto;
+                    Request.Texture2D(Queries.ImageURL(carInfoPhotoProperties[0], int.Parse(carInfoPhotoProperties[1])),
+                        onError: (localNoImagePhoto) => carInfoPhoto = localNoImagePhoto,
+                        onSuccess: (carPhoto) =>
+                        {
+                            carInfoPhoto = carPhoto;
+
+                            VersionsTableCarInfo newCarInfo = new(
+                                colNumber:      carInfo[0],
+                                year:           carInfo[1],
+                                series:         carInfo[2],
+                                color:          carInfo[3],
+                                tampo:          carInfo[4],
+                                baseColor:      carInfo[5],
+                                windowColor:    carInfo[6],
+                                interiorColor:  carInfo[7],
+                                wheelType:      carInfo[8],
+                                toyNumber:      carInfo[9],
+                                country:        carInfo[10],
+                                notes:          carInfo[11],
+                                photo:          carInfoPhoto
+                            );
+
+                            entries.Add(newCarInfo);
+                        }
+                    );
+                }
+            }
+
+            return entries;
+        }
+    }
+}
