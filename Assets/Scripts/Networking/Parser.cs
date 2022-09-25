@@ -20,12 +20,24 @@ namespace HWAPI
             List<string> lines = new(wikitext.Split("|-"));
             List<VersionsTableCarInfo> entries = new();
 
+            // for (int i = 0; i < lines.Count; i++)
+            // {
+            //     Debug.Log(lines[i]);
+            // }
+            // Debug.Log("---------");
+
             lines.ForEach(line => string.Concat(line.Where(c => !char.IsWhiteSpace(c))));
+
+            // for (int i = 0; i < lines.Count; i++)
+            // {
+            //     Debug.Log(lines[i]);
+            // }
+            // Debug.Log("---------");
 
             foreach (string line in lines)
             {
                 string newline = line.Trim();
-                if (newline.StartsWith("|"))
+                if (newline.StartsWith("|") && !newline.StartsWith("|}"))
                 {
                     string[] carInfo = newline.Split("\n");
 
@@ -39,6 +51,12 @@ namespace HWAPI
                         if (carInfo[carInfoIndex]?.Length <= 0)
                             carInfo[carInfoIndex] = "No info";
                     }
+
+                    // for (int i = 0; i < carInfo.Length; i++)
+                    // {
+                    //     Debug.Log(carInfo[i]);
+                    // }
+                    // Debug.Log("---------------");
 
                     // remove 2 characters from the start of the string if it starts with "[["
                     if (carInfo[12].StartsWith("[["))
@@ -57,32 +75,28 @@ namespace HWAPI
                     if (carInfoPhotoProperties[1].EndsWith("px"))
                         carInfoPhotoProperties[1] = carInfoPhotoProperties[1][..^2];
 
-                    Texture2D carInfoPhoto;
-                    Request.Texture2D(Queries.ImageURL(carInfoPhotoProperties[0], int.Parse(carInfoPhotoProperties[1])),
-                        onError: (localNoImagePhoto) => carInfoPhoto = localNoImagePhoto,
-                        onSuccess: (carPhoto) =>
-                        {
-                            carInfoPhoto = carPhoto;
+                    // request the url for the new car info photo name
+                    carInfo[12] = $"https://hotwheels.fandom.com/api.php?format=json&action=query&titles={carInfoPhotoProperties[0]}&prop=pageimages&pithumbsize={carInfoPhotoProperties[1]}";
 
-                            VersionsTableCarInfo newCarInfo = new(
-                                colNumber:      carInfo[0],
-                                year:           carInfo[1],
-                                series:         carInfo[2],
-                                color:          carInfo[3],
-                                tampo:          carInfo[4],
-                                baseColor:      carInfo[5],
-                                windowColor:    carInfo[6],
-                                interiorColor:  carInfo[7],
-                                wheelType:      carInfo[8],
-                                toyNumber:      carInfo[9],
-                                country:        carInfo[10],
-                                notes:          carInfo[11],
-                                photo:          carInfoPhoto
-                            );
-
-                            entries.Add(newCarInfo);
-                        }
+                    // create the new car info
+                    VersionsTableCarInfo newCarInfo = new
+                    (
+                        colNumber:      carInfo[0],
+                        year:           carInfo[1],
+                        series:         carInfo[2],
+                        color:          carInfo[3],
+                        tampo:          carInfo[4],
+                        baseColor:      carInfo[5],
+                        windowColor:    carInfo[6],
+                        interiorColor:  carInfo[7],
+                        wheelType:      carInfo[8],
+                        toyNumber:      carInfo[9],
+                        country:        carInfo[10],
+                        notes:          carInfo[11],
+                        photo:          carInfo[12]
                     );
+
+                    entries.Add(newCarInfo);
                 }
             }
 

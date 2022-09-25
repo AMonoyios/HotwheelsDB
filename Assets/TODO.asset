@@ -130,6 +130,14 @@ MonoBehaviour:
         - Raw data
 
         - Images'
+      state: 4
+      isVisibleInInspector: 0
+    state: 0
+    isVisibleInInspector: 1
+  - name: 0.1.21
+    changeLog:
+    - name: API communication
+      desc: '- working on version tables for cars (bug when deserializing photo json)'
       state: 1
       isVisibleInInspector: 1
     state: 0

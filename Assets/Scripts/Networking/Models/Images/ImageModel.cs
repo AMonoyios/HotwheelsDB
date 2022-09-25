@@ -4,12 +4,34 @@
  */
 
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace HWAPI
 {
     public sealed class ImageModel
     {
-        public Query query;
+        [JsonProperty] public string batchcomplete;
+        [JsonProperty] public Query query;
+
+        public class Query
+        {
+            public Dictionary<int, Pages> pages;
+        }
+
+        public class Pages
+        {
+            public int pageid;
+            public int ns;
+            public string title;
+            public Thumbnail thumbnail;
+        }
+
+        public class Thumbnail
+        {
+            public string source;
+            public int width;
+            public int height;
+        }
 
         public Pages[] ImagesData
         {
@@ -40,26 +62,6 @@ namespace HWAPI
 
                 return imageData.ToArray();
             }
-        }
-
-        public class Query
-        {
-            public Dictionary<int, Pages> pages;
-        }
-
-        public class Pages
-        {
-            public int pageid;
-            public int ns;
-            public string title;
-            public Thumbnail thumbnail;
-        }
-
-        public class Thumbnail
-        {
-            public string source;
-            public int width;
-            public int height;
         }
     }
 }
