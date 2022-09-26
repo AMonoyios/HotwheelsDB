@@ -12,6 +12,7 @@ using SW.Logger;
 using UnityEngine.UI;
 using System.Reflection;
 using SW.Utils;
+using SW.Utils.Convertions;
 
 public sealed class TestingAPIRequests : MonoBehaviour, ISerializationCallbackReceiver
 {
@@ -43,26 +44,21 @@ public sealed class TestingAPIRequests : MonoBehaviour, ISerializationCallbackRe
     [SerializeField]
     private Button testCarBtn;
 
+    [SerializeField]
+    private Image image;
+
     private void Start()
     {
-        testCarBtn.onClick.AddListener(() => TestCar());
+        testCarBtn.onClick.AddListener(() =>
+        {
+            CoreUtilities.ClearConsole(name);
+            TestGetImage();
+        });
     }
 
-    public void TestSourceQuery()
+    public void TestGetImage()
     {
-        CoreUtilities.ClearConsole(name);
-
-        Request.Data("https://hotwheels.fandom.com/api.php?format=json&action=query&titles=File:2022-4Set-BMWM5 (Large).JPG&prop=pageimages&pithumbsize=75",
-            onError: (error) => CoreLogger.LogError(error),
-            onSuccess: (photo) => CoreLogger.LogMessage(photo)
-        );
-    }
-
-    public void TestCar()
-    {
-        CoreUtilities.ClearConsole(name);
-
-        Request.CarPageSections(testCar,
+        Request.GetCarPageSections(testCar,
             onError: (error) => CoreLogger.LogError($"Failed to find sections for {testCar} page. {error}"),
             onSuccess: (sections) =>
             {
@@ -73,7 +69,46 @@ public sealed class TestingAPIRequests : MonoBehaviour, ISerializationCallbackRe
                     return;
                 }
 
-                Request.CarVersionsTable(testCar, sectionIndex,
+                Request.GetCarVersionsTable(testCar, sectionIndex,
+                    onError: (error) => CoreLogger.LogError($"Failed to get {testCar} versions table. {error}"),
+                    onSuccess: (versions) =>
+                    {
+                        // getting the first car only for testing purposes
+                        VersionsTableCarInfo car = versions[0];
+
+                        Request.GetSprite(car.Photo,
+                            1080,
+                            onError: (error) => image.sprite = error,
+                            onSuccess: (success) => image.sprite = success
+                        );
+                    }
+                );
+            }
+        );
+    }
+
+    public void TestSourceQuery(string query)
+    {
+        Request.GetJsonData(query,
+            onError: (error) => CoreLogger.LogError(error),
+            onSuccess: (photo) => CoreLogger.LogMessage(photo)
+        );
+    }
+
+    public void TestCarVersionsTable()
+    {
+        Request.GetCarPageSections(testCar,
+            onError: (error) => CoreLogger.LogError($"Failed to find sections for {testCar} page. {error}"),
+            onSuccess: (sections) =>
+            {
+                int sectionIndex = Utils.GetIndexOfSection("Versions", sections);
+                if (sectionIndex < 0)
+                {
+                    CoreLogger.LogError($"Versions section for {testCar} was not found!");
+                    return;
+                }
+
+                Request.GetCarVersionsTable(testCar, sectionIndex,
                     onError: (error) => CoreLogger.LogError($"Failed to get {testCar} versions table. {error}"),
                     onSuccess: (versions) =>
                     {

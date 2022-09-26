@@ -122,23 +122,22 @@ MonoBehaviour:
       isVisibleInInspector: 1
     state: 1
     isVisibleInInspector: 0
-  - name: 0.1.2
-    changeLog:
-    - name: Implement Basic Api communication
-      desc: 'Can request:
-
-        - Raw data
-
-        - Images'
-      state: 4
-      isVisibleInInspector: 0
-    state: 0
-    isVisibleInInspector: 1
-  - name: 0.1.21
+  - name: 0.1.22
     changeLog:
     - name: API communication
-      desc: '- working on version tables for cars (bug when deserializing photo json)'
-      state: 1
+      desc: '- raw data
+
+        - can fetch car data for versions
+
+        - can
+        show images
+
+        - bug fixes (parse json error on photos)'
+      state: 4
+      isVisibleInInspector: 1
+    - name: Reference errors for some cars
+      desc: 
+      state: 3
       isVisibleInInspector: 1
     state: 0
     isVisibleInInspector: 1

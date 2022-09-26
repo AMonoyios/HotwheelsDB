@@ -8,6 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using System.Linq;
 
 using Newtonsoft.Json;
 using System.Text;
@@ -74,14 +75,14 @@ namespace HWAPI
         /// <summary>
         ///     Get the raw data from a url
         /// </summary>
-        public static void Data(string url, Action<string> onError, Action<string> onSuccess)
+        public static void GetJsonData(string url, Action<string> onError, Action<string> onSuccess)
         {
             if (Instance == null)
                 Init();
 
-            Instance.StartCoroutine(DataCoroutine(url, onError, onSuccess));
+            Instance.StartCoroutine(GetJsonDataCoroutine(url, onError, onSuccess));
         }
-        private static IEnumerator DataCoroutine(string url, Action<string> onError, Action<string> onSuccess)
+        private static IEnumerator GetJsonDataCoroutine(string url, Action<string> onError, Action<string> onSuccess)
         {
             using UnityWebRequest unityWebRequest = UnityWebRequest.Get(url);
                 yield return unityWebRequest.SendWebRequest();
@@ -97,16 +98,23 @@ namespace HWAPI
         }
 
         /// <summary>
-        ///     Get the texture from a url
+        ///     WIP - Get the texture from a url
         /// </summary>
-        public static void Texture2D(string url, Action<Texture2D> onError, Action<Texture2D> onSuccess)
+        public static void GetSprite(string url, Action<Sprite> onError, Action<Sprite> onSuccess)
         {
             if (Instance == null)
                 Init();
 
-            Instance.StartCoroutine(Texture2DCoroutine(url, onError, onSuccess));
+            Instance.StartCoroutine(GetSpriteCoroutine(url, onError, onSuccess));
         }
-        private static IEnumerator Texture2DCoroutine(string url, Action<Texture2D> onError, Action<Texture2D> onSuccess)
+        public static void GetSprite(string url, int overrideSize, Action<Sprite> onError, Action<Sprite> onSuccess)
+        {
+            if (Instance == null)
+                Init();
+
+            Instance.StartCoroutine(GetSpriteCoroutine(url, onError, onSuccess, overrideSize));
+        }
+        private static IEnumerator GetSpriteCoroutine(string url, Action<Sprite> onError, Action<Sprite> onSuccess, int overrideSize = -1)
         {
             UnityWebRequest www = UnityWebRequestTexture.GetTexture(url);
                 yield return www.SendWebRequest();
@@ -114,7 +122,7 @@ namespace HWAPI
             if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
             {
                 CoreLogger.LogError($"{www.error}. Couldn't load image, Requesting NoImageFound sprite.");
-                onError(Resources.Load<Texture2D>("MissingImage.png"));
+                onError(Resources.Load<Sprite>("MissingImage.png"));
             }
             else
             {
@@ -132,40 +140,43 @@ namespace HWAPI
                     };
                 }
 
-                // Debug.Log(imageModel.ImagesData[0].thumbnail.source);
                 string imageUrl = imageModel.ImagesData[0].thumbnail.source;
+
+                //FIXME: change the replace with proper resize parsing
+                if (overrideSize > 0)
+                    imageUrl = imageUrl.Replace("75", overrideSize.ToString());
 
                 www = UnityWebRequestTexture.GetTexture(imageUrl);
                     yield return www.SendWebRequest();
 
-                Texture2D texture2D;
+                Sprite sprite;
                 if (www.result != UnityWebRequest.Result.Success)
                 {
                     CoreLogger.LogError(www.error);
-                    texture2D = Resources.Load<Texture2D>("MissingImage.png");
+                    sprite = Resources.Load<Sprite>("MissingImage.png");
                 }
                 else
                 {
                     CoreLogger.LogMessage($"Downloading {www.downloadHandler.data}");
-                    texture2D = ((DownloadHandlerTexture)www.downloadHandler).texture;
+                    sprite = SW.Utils.Convertions.CoreConvertions.ConvertTexture2DToSprite(((DownloadHandlerTexture)www.downloadHandler).texture);
                 }
 
-                CoreLogger.LogMessage($"executing onSuccess with {texture2D.name}");
-                onSuccess(texture2D);
+                CoreLogger.LogMessage($"executing onSuccess with {sprite.name}");
+                onSuccess(sprite);
             }
         }
 
         /// <summary>
         ///     Returns a list of page sections for a specific car
         /// </summary>
-        public static void CarPageSections(string carName, Action<string> onError, Action<List<PageSectionsModel.PageSection>> onSuccess)
+        public static void GetCarPageSections(string carName, Action<string> onError, Action<List<PageSectionsModel.PageSection>> onSuccess)
         {
             if (Instance == null)
                 Init();
 
-            Instance.StartCoroutine(CarPageSectionsCoroutine(carName, onError, onSuccess));
+            Instance.StartCoroutine(GetCarPageSectionsCoroutine(carName, onError, onSuccess));
         }
-        private static IEnumerator CarPageSectionsCoroutine(string carName, Action<string> onError, Action<List<PageSectionsModel.PageSection>> onSuccess)
+        private static IEnumerator GetCarPageSectionsCoroutine(string carName, Action<string> onError, Action<List<PageSectionsModel.PageSection>> onSuccess)
         {
             using UnityWebRequest www = UnityWebRequest.Get(Queries.PageSections(carName));
                 yield return www.SendWebRequest();
@@ -200,14 +211,14 @@ namespace HWAPI
         /// <summary>
         ///     Gets the versions table for a car
         /// </summary>
-        public static void CarVersionsTable(string carName, int sectionIndex, Action<string> onError, Action<List<VersionsTableCarInfo>> onSuccess)
+        public static void GetCarVersionsTable(string carName, int sectionIndex, Action<string> onError, Action<List<VersionsTableCarInfo>> onSuccess)
         {
             if (Instance == null)
                 Init();
 
-            Instance.StartCoroutine(CarVersionsTableCoroutine(carName, sectionIndex, onError, onSuccess));
+            Instance.StartCoroutine(GetCarVersionsTableCoroutine(carName, sectionIndex, onError, onSuccess));
         }
-        private static IEnumerator CarVersionsTableCoroutine(string carName, int sectionIndex, Action<string> onError, Action<List<VersionsTableCarInfo>> onSuccess)
+        private static IEnumerator GetCarVersionsTableCoroutine(string carName, int sectionIndex, Action<string> onError, Action<List<VersionsTableCarInfo>> onSuccess)
         {
             using UnityWebRequest www = UnityWebRequest.Get(Queries.VersionsTable(carName, sectionIndex));
                 yield return www.SendWebRequest();
@@ -218,21 +229,27 @@ namespace HWAPI
             }
             else
             {
-                string versionsTableDataJson = Encoding.UTF8.GetString(www.downloadHandler.data);
-                VersionsTableModel versionsTable = JsonConvert.DeserializeObject<VersionsTableModel>(versionsTableDataJson);
-                List<VersionsTableCarInfo> versionsTableCarInfo = Parser.FromWikitext(versionsTable.Content());
+                string versionsTableJson = Encoding.UTF8.GetString(www.downloadHandler.data);
+                VersionsTableModel versionsTable = JsonConvert.DeserializeObject<VersionsTableModel>(versionsTableJson);
+                List<VersionsTableCarInfo> carInfoList = Parser.FromWikitext(versionsTable.Content());
 
-                for (int versionsIndex = 0; versionsIndex < versionsTableCarInfo.Count; versionsIndex++)
+                foreach (var carInfo in carInfoList.Select((Data, Index) => new { Data, Index }))
                 {
-                    string versionsTableCarPhotoJson = versionsTableCarInfo[versionsIndex].Photo;
+                    string carPhotoQuery = carInfo.Data.Photo;
 
-                    Debug.Log($"{versionsIndex}: {versionsTableCarInfo[versionsIndex].Photo}");
+                    GetJsonData(carPhotoQuery,
+                        onError: (error) => CoreLogger.LogError($"Failed to fetch json data for: {carPhotoQuery}. {error}"),
+                        onSuccess: (json) =>
+                        {
+                            string carPhotoJson = json;
 
-                    ImageModel imageModel = JsonConvert.DeserializeObject<ImageModel>(versionsTableCarPhotoJson);
-                    versionsTableCarInfo[versionsIndex].Photo = imageModel.ImagesData[versionsIndex].thumbnail.source;
+                            ImageModel imageModel = JsonConvert.DeserializeObject<ImageModel>(carPhotoJson);
+                            carInfoList[carInfo.Index].Photo = imageModel.ImagesData[carInfo.Index].thumbnail.source;
+                        }
+                    );
                 }
 
-                onSuccess(versionsTableCarInfo);
+                onSuccess(carInfoList);
             }
         }
     }
