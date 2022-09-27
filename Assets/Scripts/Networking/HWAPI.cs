@@ -59,6 +59,16 @@ namespace HWAPI
             {
                 return $"https://hotwheels.fandom.com/api.php?format=json&action=parse&page={carName}&prop=wikitext&section={sectionIndex}";
             }
+
+            public static string LocalMissingImage()
+            {
+                return "MissingImage.png";
+            }
+
+            public static string CloudMissingImage()
+            {
+                return "File:Image_Not_Available.jpg";
+            }
         }
 
         private class CoreNetworkingMonoBehaviour : MonoPersistentSingleton<CoreNetworkingMonoBehaviour> {}
@@ -116,13 +126,15 @@ namespace HWAPI
         }
         private static IEnumerator GetSpriteCoroutine(string url, Action<Sprite> onError, Action<Sprite> onSuccess, int overrideSize = -1)
         {
+            CoreLogger.LogMessage($"Downloading image from URL: {url}");
+
             UnityWebRequest www = UnityWebRequestTexture.GetTexture(url);
                 yield return www.SendWebRequest();
 
             if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
             {
-                CoreLogger.LogError($"{www.error}. Couldn't load image, Requesting NoImageFound sprite.");
-                onError(Resources.Load<Sprite>("MissingImage.png"));
+                CoreLogger.LogError($"{www.error}. Couldn't download image, Requesting local {Queries.LocalMissingImage()}");
+                onError(Resources.Load<Sprite>(Queries.LocalMissingImage()));
             }
             else
             {
@@ -135,7 +147,7 @@ namespace HWAPI
                     {
                         thumbnail = new()
                         {
-                            source = Queries.ImageURL("File:Image_Not_Available.jpg")
+                            source = Queries.ImageURL(Queries.CloudMissingImage())
                         }
                     };
                 }
@@ -152,16 +164,20 @@ namespace HWAPI
                 Sprite sprite;
                 if (www.result != UnityWebRequest.Result.Success)
                 {
-                    CoreLogger.LogError(www.error);
-                    sprite = Resources.Load<Sprite>("MissingImage.png");
+                    CoreLogger.LogError($"Request texture from url {imageUrl} failed! Returning local MissingImage.png.\n" +
+                                        $"{www.error}");
+
+                    sprite = Resources.Load<Sprite>(Queries.LocalMissingImage());
                 }
                 else
                 {
-                    CoreLogger.LogMessage($"Downloading {www.downloadHandler.data}");
-                    sprite = SW.Utils.Convertions.CoreConvertions.ConvertTexture2DToSprite(((DownloadHandlerTexture)www.downloadHandler).texture);
+                    Texture2D texture = ((DownloadHandlerTexture)www.downloadHandler).texture;
+                    sprite = SW.Utils.Convertions.CoreConvertions.ConvertTexture2DToSprite(texture);
+
+                    if (sprite == null)
+                        CoreLogger.LogWarning($"Sprite for {imageUrl} failed to parse, returning null.");
                 }
 
-                CoreLogger.LogMessage($"executing onSuccess with {sprite.name}");
                 onSuccess(sprite);
             }
         }
@@ -242,9 +258,17 @@ namespace HWAPI
                         onSuccess: (json) =>
                         {
                             string carPhotoJson = json;
+                            Debug.Log(carPhotoJson);
 
                             ImageModel imageModel = JsonConvert.DeserializeObject<ImageModel>(carPhotoJson);
-                            carInfoList[carInfo.Index].Photo = imageModel.ImagesData[carInfo.Index].thumbnail.source;
+                            ImageModel.Pages pages = imageModel.ImagesData[carInfo.Index];
+                            Debug.Log("ns: " + pages.ns);
+                            Debug.Log("id: " + pages.pageid);
+                            Debug.Log("title: " + pages.title);
+                            Debug.Log("source: " + pages.thumbnail);
+                            Debug.Log("-----------------");
+                            string sourceImage = pages.thumbnail.source;
+                            carInfoList[carInfo.Index].Photo = sourceImage;
                         }
                     );
                 }
