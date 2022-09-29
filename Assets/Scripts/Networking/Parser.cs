@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using SW.Logger;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace HWAPI
 {
@@ -52,11 +53,11 @@ namespace HWAPI
                             carInfo[carInfoIndex] = "No info";
                     }
 
-                    // for (int i = 0; i < carInfo.Length; i++)
-                    // {
-                    //     Debug.Log(carInfo[i]);
-                    // }
-                    // Debug.Log("---------------");
+                    for (int i = 0; i < carInfo.Length; i++)
+                    {
+                        Debug.Log(carInfo[i]);
+                    }
+                    Debug.Log("---------------");
 
                     // remove 2 characters from the start of the string if it starts with "[["
                     if (carInfo[12].StartsWith("[["))
@@ -76,7 +77,7 @@ namespace HWAPI
                         carInfoPhotoProperties[1] = carInfoPhotoProperties[1][..^2];
 
                     // request the url for the new car info photo name
-                    carInfo[12] = $"https://hotwheels.fandom.com/api.php?format=json&action=query&titles={carInfoPhotoProperties[0]}&prop=pageimages&pithumbsize={carInfoPhotoProperties[1]}";
+                    carInfo[12] = $"https://hotwheels.fandom.com/api.php?format=json&action=query&titles={UnityWebRequest.EscapeURL(carInfoPhotoProperties[0].Replace(" ", "_"))}&prop=pageimages&pithumbsize={carInfoPhotoProperties[1]}";
 
                     // create the new car info
                     VersionsTableCarInfo newCarInfo = new

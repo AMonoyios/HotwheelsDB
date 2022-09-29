@@ -396,7 +396,7 @@ MonoBehaviour:
   - '%2716_Cadillac_ATS-V_R'
   - Sakura_Sprinter
   - Nissan_Silvia_(S13)
-  testCar: BMW_M3_E46
+  testCar: Mercedes-Benz_CL55_AMG
   testCarBtn: {fileID: 1009393123}
   image: {fileID: 1176486645}
 --- !u!1 &943431525

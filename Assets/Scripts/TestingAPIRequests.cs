@@ -74,6 +74,7 @@ public sealed class TestingAPIRequests : MonoBehaviour, ISerializationCallbackRe
                     onSuccess: (versions) =>
                     {
                         // getting the first car only for testing purposes
+                        print($"XXX versions count: {versions.Count}");
                         VersionsTableCarInfo car = versions[0];
 
                         Request.GetSprite(car.Photo,

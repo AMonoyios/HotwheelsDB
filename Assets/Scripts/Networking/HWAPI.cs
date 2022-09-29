@@ -49,7 +49,7 @@ namespace HWAPI
             /// </summary>
             public static string PageSections(string carName)
             {
-                return $"https://hotwheels.fandom.com/api.php?format=json&action=parse&page={carName}&prop=sections";
+                return $"https://hotwheels.fandom.com/api.php?format=json&action=parse&page={UnityWebRequest.EscapeURL(carName.Replace(" ", "_"))}&prop=sections";
             }
 
             /// <summary>
@@ -57,7 +57,7 @@ namespace HWAPI
             /// </summary>
             public static string VersionsTable(string carName, int sectionIndex)
             {
-                return $"https://hotwheels.fandom.com/api.php?format=json&action=parse&page={carName}&prop=wikitext&section={sectionIndex}";
+                return $"https://hotwheels.fandom.com/api.php?format=json&action=parse&page={UnityWebRequest.EscapeURL(carName.Replace(" ", "_"))}&prop=wikitext&section={sectionIndex}";
             }
 
             public static string LocalMissingImage()
@@ -155,8 +155,8 @@ namespace HWAPI
                 string imageUrl = imageModel.ImagesData[0].thumbnail.source;
 
                 //FIXME: change the replace with proper resize parsing
-                if (overrideSize > 0)
-                    imageUrl = imageUrl.Replace("75", overrideSize.ToString());
+                // if (overrideSize > 0)
+                //     imageUrl = imageUrl.Replace("75", overrideSize.ToString());
 
                 www = UnityWebRequestTexture.GetTexture(imageUrl);
                     yield return www.SendWebRequest();
@@ -253,24 +253,36 @@ namespace HWAPI
                 {
                     string carPhotoQuery = carInfo.Data.Photo;
 
+                    bool canContinueRequest = false;
                     GetJsonData(carPhotoQuery,
-                        onError: (error) => CoreLogger.LogError($"Failed to fetch json data for: {carPhotoQuery}. {error}"),
+                        onError: (error) =>
+                        {
+                            CoreLogger.LogError($"Failed to fetch json data for: {carPhotoQuery}. {error}");
+
+                            canContinueRequest = true;
+                        },
                         onSuccess: (json) =>
                         {
                             string carPhotoJson = json;
-                            Debug.Log(carPhotoJson);
+                            Debug.Log("dame: " + carPhotoJson);
 
                             ImageModel imageModel = JsonConvert.DeserializeObject<ImageModel>(carPhotoJson);
+                            Debug.Log($"XXX carinfoindex {carInfo.Index}, imageModelDataLength {imageModel.ImagesData.Length}");
                             ImageModel.Pages pages = imageModel.ImagesData[carInfo.Index];
                             Debug.Log("ns: " + pages.ns);
                             Debug.Log("id: " + pages.pageid);
                             Debug.Log("title: " + pages.title);
                             Debug.Log("source: " + pages.thumbnail);
                             Debug.Log("-----------------");
+
+                            canContinueRequest = true;
+
                             string sourceImage = pages.thumbnail.source;
                             carInfoList[carInfo.Index].Photo = sourceImage;
                         }
                     );
+                    while (!canContinueRequest)
+                        yield return null;
                 }
 
                 onSuccess(carInfoList);
