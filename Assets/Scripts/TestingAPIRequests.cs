@@ -38,54 +38,95 @@ public sealed class TestingAPIRequests : MonoBehaviour, ISerializationCallbackRe
         };
     }
 
-    [ListEnumPopup(typeof(TestingAPIRequests), "tmp_stringsPopupList"), SerializeField]
-    private string testCar;
+    // [ListEnumPopup(typeof(TestingAPIRequests), "tmp_stringsPopupList"), SerializeField]
+    // private string testCar;
 
     [SerializeField]
-    private Button testCarBtn;
+    private Button previousPageBtn;
+    [SerializeField]
+    private TMPro.TextMeshProUGUI pageLabel;
+    [SerializeField]
+    private Button nextPageBtn;
 
     [SerializeField]
-    private Image image;
+    private uint pageIndex;
 
-    private void Start()
+    private void Awake()
     {
-        testCarBtn.onClick.AddListener(() =>
-        {
-            CoreUtilities.ClearConsole(name);
-            TestGetImage();
-        });
+        CalculatePage(pageIndex);
+
+        previousPageBtn.onClick.AddListener(() => CalculatePage(pageIndex--));
+        nextPageBtn.onClick.AddListener(() => {Debug.Log("Before page index: "+ pageIndex); CalculatePage(pageIndex++);});
+
+        previousPageBtn.interactable = false;
     }
 
-    public void TestGetImage()
+    public void CalculatePage(uint pageIndex)
     {
-        Request.GetCarPageSections(testCar,
-            onError: (error) => CoreLogger.LogError($"Failed to find sections for {testCar} page. {error}"),
-            onSuccess: (sections) =>
+        Debug.Log("After page index: " + pageIndex);
+        pageLabel.text = pageIndex.ToString();
+
+        Request.GetYears
+        (
+            pageIndex,
+            onError: (error) => CoreLogger.LogError(error),
+            onSuccess: (yearPages) =>
             {
-                int sectionIndex = Utils.GetIndexOfSection("Versions", sections);
-                if (sectionIndex < 0)
+                previousPageBtn.interactable = pageIndex != 1;
+
+                if (yearPages.Count == 0)
                 {
-                    CoreLogger.LogError($"Versions section for {testCar} was not found!");
-                    return;
+                    nextPageBtn.interactable = false;
                 }
+                else
+                {
+                    nextPageBtn.interactable = true;
 
-                Request.GetCarVersionsTable(testCar, sectionIndex,
-                    onError: (error) => CoreLogger.LogError($"Failed to get {testCar} versions table. {error}"),
-                    onSuccess: (versions) =>
+                    CoreUtilities.ClearConsole(name);
+
+                    Debug.Log("-----------");
+                    for (int i = 0; i < yearPages.Count; i++)
                     {
-                        // getting the first car only for testing purposes
-                        print($"XXX versions count: {versions.Count}");
-                        VersionsTableCarInfo car = versions[0];
-
-                        Request.GetSprite(car.Photo,
-                            1080,
-                            onError: (error) => image.sprite = error,
-                            onSuccess: (success) => image.sprite = success
-                        );
+                        Debug.Log(yearPages[i].title);
+                        Debug.Log(yearPages[i].label);
+                        Debug.Log(yearPages[i].onPage);
+                        Debug.Log("~");
                     }
-                );
+                    Debug.Log("-----------");
+                }
             }
         );
+
+        #region obsolete
+        // Request.GetCarPageSections(testCar,
+        //     onError: (error) => CoreLogger.LogError($"Failed to find sections for {testCar} page. {error}"),
+        //     onSuccess: (sections) =>
+        //     {
+        //         int sectionIndex = Utils.GetIndexOfSection("Versions", sections);
+        //         if (sectionIndex < 0)
+        //         {
+        //             CoreLogger.LogError($"Versions section for {testCar} was not found!");
+        //             return;
+        //         }
+
+        //         Request.GetCarVersionsTable(testCar, sectionIndex,
+        //             onError: (error) => CoreLogger.LogError($"Failed to get {testCar} versions table. {error}"),
+        //             onSuccess: (versions) =>
+        //             {
+        //                 // getting the first car only for testing purposes
+        //                 print($"XXX versions count: {versions.Count}");
+        //                 VersionsTableCarInfo car = versions[0];
+
+        //                 Request.GetSprite(car.Photo,
+        //                     1080,
+        //                     onError: (error) => image.sprite = error,
+        //                     onSuccess: (success) => image.sprite = success
+        //                 );
+        //             }
+        //         );
+        //     }
+        // );
+        #endregion
     }
 
     public void TestSourceQuery(string query)
@@ -93,45 +134,6 @@ public sealed class TestingAPIRequests : MonoBehaviour, ISerializationCallbackRe
         Request.GetJsonData(query,
             onError: (error) => CoreLogger.LogError(error),
             onSuccess: (photo) => CoreLogger.LogMessage(photo)
-        );
-    }
-
-    public void TestCarVersionsTable()
-    {
-        Request.GetCarPageSections(testCar,
-            onError: (error) => CoreLogger.LogError($"Failed to find sections for {testCar} page. {error}"),
-            onSuccess: (sections) =>
-            {
-                int sectionIndex = Utils.GetIndexOfSection("Versions", sections);
-                if (sectionIndex < 0)
-                {
-                    CoreLogger.LogError($"Versions section for {testCar} was not found!");
-                    return;
-                }
-
-                Request.GetCarVersionsTable(testCar, sectionIndex,
-                    onError: (error) => CoreLogger.LogError($"Failed to get {testCar} versions table. {error}"),
-                    onSuccess: (versions) =>
-                    {
-                        for (int i = 0; i < versions.Count; i++)
-                        {
-                            CoreLogger.LogMessage($"Col#: {versions[i].ColNumber} \n" +
-                                $"Year: {versions[i].Year} \n" +
-                                $"Series: {versions[i].Series} \n" +
-                                $"Color: {versions[i].Color} \n" +
-                                $"Tampo: {versions[i].Tampo} \n" +
-                                $"Base color: {versions[i].BaseColor} \n" +
-                                $"Window color: {versions[i].WindowColor} \n" +
-                                $"Interior color: {versions[i].InteriorColor} \n" +
-                                $"Wheel type: {versions[i].WheelType} \n" +
-                                $"Toy#: {versions[i].ToyNumber} \n" +
-                                $"Country: {versions[i].Country} \n" +
-                                $"Notes: {versions[i].Notes} \n" +
-                                $"Photo: {versions[i].Photo}");
-                        }
-                    }
-                );
-            }
         );
     }
 }

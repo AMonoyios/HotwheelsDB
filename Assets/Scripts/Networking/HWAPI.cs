@@ -20,6 +20,10 @@ namespace HWAPI
     {
         private static class Queries
         {
+            #region Old Queries
+
+            /*
+
             /// <summary>
             ///     Gets the first 100(by default, max is 500) years of hotwheels
             /// </summary>
@@ -60,6 +64,10 @@ namespace HWAPI
                 return $"https://hotwheels.fandom.com/api.php?format=json&action=parse&page={UnityWebRequest.EscapeURL(carName.Replace(" ", "_"))}&prop=wikitext&section={sectionIndex}";
             }
 
+            */
+
+            #endregion
+
             public static string LocalMissingImage()
             {
                 return "MissingImage.png";
@@ -71,6 +79,7 @@ namespace HWAPI
             }
         }
 
+        #region MonoBehaviour
         private class CoreNetworkingMonoBehaviour : MonoPersistentSingleton<CoreNetworkingMonoBehaviour> {}
         private static CoreNetworkingMonoBehaviour Instance;
         private static void Init()
@@ -81,6 +90,7 @@ namespace HWAPI
                 Instance = gameobject.AddComponent<CoreNetworkingMonoBehaviour>();
             }
         }
+        #endregion
 
         /// <summary>
         ///     Get the raw data from a url
@@ -106,6 +116,80 @@ namespace HWAPI
                 onSuccess(unityWebRequest.downloadHandler.text);
             }
         }
+
+        public static void GetYears(Action<string> onError, Action<List<YearCategoriesModel.YearMember>> onSuccess)
+        {
+            if (Instance == null)
+                Init();
+
+            Instance.StartCoroutine(GetYearsCoroutine(0, onError, onSuccess));
+        }
+        public static void GetYears(uint page, Action<string> onError, Action<List<YearCategoriesModel.YearMember>> onSuccess)
+        {
+            if (Instance == null)
+                Init();
+
+            Instance.StartCoroutine(GetYearsCoroutine(page, onError, onSuccess));
+        }
+        private static IEnumerator GetYearsCoroutine(uint page, Action<string> onError, Action<List<YearCategoriesModel.YearMember>> onSuccess)
+        {
+            // TODO: this will only work up to the year 2468
+            const string url = "https://hotwheels.fandom.com/api.php?action=query&list=categorymembers&cmlimit=500&cmtitle=Category:Hot_Wheels_by_Year&format=json";
+
+            UnityWebRequest www = UnityWebRequest.Get(url);
+                yield return www.SendWebRequest();
+
+            if (www.result != UnityWebRequest.Result.Success)
+            {
+                onError($"Failed to fetch url {url}. Error: {www.error}");
+            }
+            else
+            {
+                string json = Encoding.UTF8.GetString(www.downloadHandler.data);
+                YearCategoriesModel model = JsonConvert.DeserializeObject<YearCategoriesModel>(json);
+
+                List<YearCategoriesModel.YearMember> yearsOnScreen = new();
+
+                uint onPage = 0;
+                const int yearsPerPage = 10;
+
+                for (int i = 0; i < model.YearCategories.Count; i++)
+                {
+                    // Assign the correct label to each year category
+                    if (model.YearCategories[i].title.StartsWith("Category:"))
+                    {
+                        string label = model.YearCategories[i].title;
+                        model.YearCategories[i].label = label.Replace("Category:", "");
+                    }
+
+                    // Convert title to a web request safe string
+                    model.YearCategories[i].title = model.YearCategories[i].title.Replace(" ", "_");
+
+                    // Calculate on which page index the year will be assigned to
+                    if (i % yearsPerPage == 0)
+                        onPage++;
+                    model.YearCategories[i].onPage = onPage;
+                }
+
+                if (page > 0)
+                {
+                    foreach (YearCategoriesModel.YearMember member in model.YearCategories)
+                    {
+                        if (member.onPage == page)
+                            yearsOnScreen.Add(member);
+                    }
+                }
+                else
+                {
+                    yearsOnScreen.AddRange(model.YearCategories);
+                }
+
+                onSuccess(yearsOnScreen);
+            }
+        }
+
+        #region Old Methods
+        /*
 
         /// <summary>
         ///     WIP - Get the texture from a url
@@ -258,7 +342,6 @@ namespace HWAPI
                         onError: (error) =>
                         {
                             CoreLogger.LogError($"Failed to fetch json data for: {carPhotoQuery}. {error}");
-
                             canContinueRequest = true;
                         },
                         onSuccess: (json) =>
@@ -306,5 +389,7 @@ namespace HWAPI
             }
             return -1;
         }
+        */
+        #endregion
     }
 }

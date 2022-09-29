@@ -53,9 +53,10 @@ namespace HWAPI
                             carInfo[carInfoIndex] = "No info";
                     }
 
+                    Debug.Log("---------------");
                     for (int i = 0; i < carInfo.Length; i++)
                     {
-                        Debug.Log(carInfo[i]);
+                        Debug.Log(i + ": " + carInfo[i]);
                     }
                     Debug.Log("---------------");
 
