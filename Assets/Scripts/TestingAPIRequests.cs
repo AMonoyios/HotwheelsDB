@@ -3,77 +3,120 @@
  * GitHub: https://github.com/AMonoyios?tab=repositories
  */
 
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 using HWAPI;
 using SW.Logger;
-using UnityEngine.UI;
-using System.Reflection;
 using SW.Utils;
-using SW.Utils.Convertions;
-using System.Text.RegularExpressions;
 using TMPro;
-
-/*
-f(signature) -> page, next signature
-f() -> page1, signature2
-f(signature2) -> page2, signature3
-*/
 
 public sealed class TestingAPIRequests : MonoBehaviour
 {
     [SerializeField]
     private Button previousPageBtn;
-    // [SerializeField]
-    // private string previousPage;
     [SerializeField]
     private Button nextPageBtn;
-    // [SerializeField]
-    // private string nextPage;
     [SerializeField]
     private TextMeshProUGUI pageIndexLbl;
 
-    [Space(20.0f)]
-
+    [Space(10.0f)]
+    [Header("Debugging")]
     [SerializeField]
-    private int currentPageIndex = 0;
+    private bool clearConsoleAfterRequest;
     [SerializeField]
-    private List<string> pagesSubcat = new();
+    private int currentPageIndex;
+    private readonly Dictionary<int, string> pagesReferenceIdDict = new();
+    [SerializeField]
+    private string dictPageId;
+    [SerializeField]
+    private bool hasFoundLastPage;
+    [SerializeField]
+    private int lastPageIndex;
+    [SerializeField]
+    private bool hasSetLastPageIndex;
 
     private void Awake()
     {
+        ShowFirstPage();
+
+        previousPageBtn.onClick.AddListener(() => ShowPreviousPage());
+        nextPageBtn.onClick.AddListener(() => ShowNextPage());
+    }
+
+    private void ShowFirstPage()
+    {
+        currentPageIndex = 0;
         RequestPage(string.Empty);
 
-        previousPageBtn.onClick.AddListener(() =>
+        CalculateButtonStates();
+    }
+
+    private void ShowPreviousPage()
+    {
+        currentPageIndex--;
+
+        if (currentPageIndex - 1 >= 0)
         {
-            if (currentPageIndex <= 0)
+            if (pagesReferenceIdDict.TryGetValue(currentPageIndex - 1, out dictPageId))
             {
-                return;
-            }
-
-            currentPageIndex--;
-
-            if (currentPageIndex - 1 >= 0)
-            {
-                RequestPage(pagesSubcat[currentPageIndex - 1]);
+                CoreLogger.LogMessage($"Found page id {dictPageId} in {nameof(pagesReferenceIdDict)} at index {currentPageIndex - 1}", true);
+                RequestPage(dictPageId);
             }
             else
             {
-                RequestPage(string.Empty);
+                CoreLogger.LogError($"Failed to find {dictPageId} in {nameof(pagesReferenceIdDict)} at index {currentPageIndex - 1}", true);
             }
-        });
-        nextPageBtn.onClick.AddListener(() =>
+        }
+        else
         {
-            RequestPage(pagesSubcat[currentPageIndex]);
-            currentPageIndex++;
-        });
+            ShowFirstPage();
+        }
+
+        CalculateButtonStates();
+    }
+
+    private void ShowNextPage()
+    {
+        if (pagesReferenceIdDict.TryGetValue(currentPageIndex, out dictPageId))
+        {
+            CoreLogger.LogMessage($"Found page id {dictPageId} in {nameof(pagesReferenceIdDict)} at index {currentPageIndex}", true);
+            RequestPage(dictPageId);
+        }
+        else
+        {
+            CoreLogger.LogError($"Failed to find {dictPageId} in {nameof(pagesReferenceIdDict)} at index {currentPageIndex}", true);
+        }
+
+        currentPageIndex++;
+
+        CalculateButtonStates();
+    }
+
+    private void CalculateButtonStates()
+    {
+        previousPageBtn.interactable = currentPageIndex > 0;
+        CoreLogger.LogMessage($"{nameof(previousPageBtn)} was set to {(currentPageIndex > 0 ? "true" : "false")}", true);
+
+        if (hasFoundLastPage)
+        {
+            nextPageBtn.interactable = currentPageIndex < lastPageIndex;
+            CoreLogger.LogMessage($"Last page was found at index {currentPageIndex}", true);
+
+            if (!hasSetLastPageIndex)
+            {
+                lastPageIndex = currentPageIndex;
+                hasSetLastPageIndex = true;
+                CoreLogger.LogMessage($"Last page index was set and locked, index: {lastPageIndex}", true);
+            }
+        }
     }
 
     private void RequestPage(string cmcontinue)
     {
-        CoreUtilities.ClearConsole(name);
+        if (clearConsoleAfterRequest)
+            CoreUtilities.ClearConsole(name);
 
         Request.GetYearPage
         (
@@ -81,18 +124,38 @@ public sealed class TestingAPIRequests : MonoBehaviour
             onError: (error) => CoreLogger.LogError(error),
             onSuccess: (yearPages) =>
             {
-                if (yearPages.Navigate != null && !pagesSubcat.Contains(yearPages.Navigate.next))
+                if (yearPages.Navigate == null)
                 {
-                    pagesSubcat.Add(yearPages.Navigate.next);
+                    hasFoundLastPage = true;
+                    CalculateButtonStates();
+                }
+                else if (!pagesReferenceIdDict.ContainsValue(yearPages.Navigate.next))
+                {
+                    if (pagesReferenceIdDict.TryAdd(currentPageIndex, yearPages.Navigate.next))
+                    {
+                        CoreLogger.LogMessage($"Succesfully added {yearPages.Navigate.next} to dictionary with key {currentPageIndex}");
+                    }
+                    else
+                    {
+                        CoreLogger.LogError($"Failed to add {yearPages.Navigate.next} to dictionary with key {currentPageIndex}");
+                    }
+                }
+                else
+                {
+                    CoreLogger.LogWarning($"Page with reference id {yearPages.Navigate.next} already exists in {nameof(pagesReferenceIdDict)}", true);
                 }
 
-                Debug.Log("-----------");
-                for (int i = 0; i < yearPages.YearCategories.Count; i++)
-                {
-                    Debug.Log($"page label: {yearPages.YearCategories[i].label}");
-                    Debug.Log($"page title: {yearPages.YearCategories[i].title}");
-                    Debug.Log("~~~");
-                }
+                // ---------- This is where you show all the data for each page -------------- //
+
+                // Debug.Log("-----------");
+                // for (int i = 0; i < yearPages.YearCategories.Count; i++)
+                // {
+                //     Debug.Log($"page label: {yearPages.YearCategories[i].label}");
+                //     Debug.Log($"page title: {yearPages.YearCategories[i].title}");
+                //     Debug.Log("~~~");
+                // }
+
+                // --------------------------------------------------------------------------- //
 
                 pageIndexLbl.text = $"{currentPageIndex + 1}";
             }

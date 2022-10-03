@@ -835,6 +835,7 @@ MonoBehaviour:
   previousPageBtn: {fileID: 921046418}
   nextPageBtn: {fileID: 1125897186}
   pageIndexLbl: {fileID: 455453740}
+  clearConsoleAfterRequest: 0
   currentPageIndex: 0
   pagesSubcat: []
 --- !u!1 &921046414
