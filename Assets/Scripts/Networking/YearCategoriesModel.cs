@@ -11,6 +11,16 @@ namespace HWAPI
     {
         [JsonProperty("query")]
         private Query query;
+        [JsonProperty("continue")]
+        private Continue navigation;
+
+        public class Continue
+        {
+            [JsonProperty("cmcontinue")]
+            public string next;
+
+            public string previous;
+        }
 
         private class Query
         {
@@ -26,9 +36,9 @@ namespace HWAPI
             public string title;
 
             public string label;
-            public uint onPage;
         }
 
         public List<YearMember> YearCategories => query.years;
+        public Continue Navigate => navigation;
     }
 }

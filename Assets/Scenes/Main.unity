@@ -295,7 +295,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 1
+  m_text: 0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -832,17 +832,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 616c159710703cc47a1461b7d10c2e93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StringPopupList:
-  - 2001_BMW_M5_E39
-  - BMW_M3_E46
-  - Mercedes-Benz_CL55_AMG
-  - '%2716_Cadillac_ATS-V_R'
-  - Sakura_Sprinter
-  - Nissan_Silvia_(S13)
   previousPageBtn: {fileID: 921046418}
-  pageLabel: {fileID: 455453740}
   nextPageBtn: {fileID: 1125897186}
-  pageIndex: 1
+  pageIndexLbl: {fileID: 455453740}
+  currentPageIndex: 0
+  pagesSubcat: []
 --- !u!1 &921046414
 GameObject:
   m_ObjectHideFlags: 0

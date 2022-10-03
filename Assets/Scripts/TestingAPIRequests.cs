@@ -13,91 +13,93 @@ using UnityEngine.UI;
 using System.Reflection;
 using SW.Utils;
 using SW.Utils.Convertions;
+using System.Text.RegularExpressions;
+using TMPro;
 
-public sealed class TestingAPIRequests : MonoBehaviour, ISerializationCallbackReceiver
+/*
+f(signature) -> page, next signature
+f() -> page1, signature2
+f(signature2) -> page2, signature3
+*/
+
+public sealed class TestingAPIRequests : MonoBehaviour
 {
-    #region StringEnumPopup
-    public static List<string> tmp_stringsPopupList;
-    [HideInInspector] public List<string> StringPopupList;
-    public void UpdateList() { tmp_stringsPopupList = StringPopupList; }
-    public void OnBeforeSerialize() { UpdateList(); }
-    public void OnAfterDeserialize() {}
-    #endregion
-
-    [ContextMenu("Create test cars names list")]
-    public void CreateCarNamesList()
-    {
-        StringPopupList = new()
-        {
-            "2001_BMW_M5_E39",
-            "BMW_M3_E46",
-            "Mercedes-Benz_CL55_AMG",
-            "%2716_Cadillac_ATS-V_R",
-            "Sakura_Sprinter",
-            "Nissan_Silvia_(S13)"
-        };
-    }
-
-    // [ListEnumPopup(typeof(TestingAPIRequests), "tmp_stringsPopupList"), SerializeField]
-    // private string testCar;
-
     [SerializeField]
     private Button previousPageBtn;
-    [SerializeField]
-    private TMPro.TextMeshProUGUI pageLabel;
+    // [SerializeField]
+    // private string previousPage;
     [SerializeField]
     private Button nextPageBtn;
+    // [SerializeField]
+    // private string nextPage;
+    [SerializeField]
+    private TextMeshProUGUI pageIndexLbl;
+
+    [Space(20.0f)]
 
     [SerializeField]
-    private uint pageIndex;
+    private int currentPageIndex = 0;
+    [SerializeField]
+    private List<string> pagesSubcat = new();
 
     private void Awake()
     {
-        CalculatePage(pageIndex);
+        RequestPage(string.Empty);
 
-        previousPageBtn.onClick.AddListener(() => CalculatePage(pageIndex--));
-        nextPageBtn.onClick.AddListener(() => {Debug.Log("Before page index: "+ pageIndex); CalculatePage(pageIndex++);});
+        previousPageBtn.onClick.AddListener(() =>
+        {
+            if (currentPageIndex <= 0)
+            {
+                return;
+            }
 
-        previousPageBtn.interactable = false;
+            currentPageIndex--;
+
+            if (currentPageIndex - 1 >= 0)
+            {
+                RequestPage(pagesSubcat[currentPageIndex - 1]);
+            }
+            else
+            {
+                RequestPage(string.Empty);
+            }
+        });
+        nextPageBtn.onClick.AddListener(() =>
+        {
+            RequestPage(pagesSubcat[currentPageIndex]);
+            currentPageIndex++;
+        });
     }
 
-    public void CalculatePage(uint pageIndex)
+    private void RequestPage(string cmcontinue)
     {
-        Debug.Log("After page index: " + pageIndex);
-        pageLabel.text = pageIndex.ToString();
+        CoreUtilities.ClearConsole(name);
 
-        Request.GetYears
+        Request.GetYearPage
         (
-            pageIndex,
+            cmcontinue,
             onError: (error) => CoreLogger.LogError(error),
             onSuccess: (yearPages) =>
             {
-                previousPageBtn.interactable = pageIndex != 1;
-
-                if (yearPages.Count == 0)
+                if (yearPages.Navigate != null && !pagesSubcat.Contains(yearPages.Navigate.next))
                 {
-                    nextPageBtn.interactable = false;
+                    pagesSubcat.Add(yearPages.Navigate.next);
                 }
-                else
+
+                Debug.Log("-----------");
+                for (int i = 0; i < yearPages.YearCategories.Count; i++)
                 {
-                    nextPageBtn.interactable = true;
-
-                    CoreUtilities.ClearConsole(name);
-
-                    Debug.Log("-----------");
-                    for (int i = 0; i < yearPages.Count; i++)
-                    {
-                        Debug.Log(yearPages[i].title);
-                        Debug.Log(yearPages[i].label);
-                        Debug.Log(yearPages[i].onPage);
-                        Debug.Log("~");
-                    }
-                    Debug.Log("-----------");
+                    Debug.Log($"page label: {yearPages.YearCategories[i].label}");
+                    Debug.Log($"page title: {yearPages.YearCategories[i].title}");
+                    Debug.Log("~~~");
                 }
+
+                pageIndexLbl.text = $"{currentPageIndex + 1}";
             }
         );
+    }
 
-        #region obsolete
+    #region Old methods
         // Request.GetCarPageSections(testCar,
         //     onError: (error) => CoreLogger.LogError($"Failed to find sections for {testCar} page. {error}"),
         //     onSuccess: (sections) =>
@@ -127,7 +129,6 @@ public sealed class TestingAPIRequests : MonoBehaviour, ISerializationCallbackRe
         //     }
         // );
         #endregion
-    }
 
     public void TestSourceQuery(string query)
     {

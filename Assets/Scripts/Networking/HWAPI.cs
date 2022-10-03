@@ -13,6 +13,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using System.Text;
 using SW.Logger;
+using System.Text.RegularExpressions;
 
 namespace HWAPI
 {
@@ -117,24 +118,23 @@ namespace HWAPI
             }
         }
 
-        public static void GetYears(Action<string> onError, Action<List<YearCategoriesModel.YearMember>> onSuccess)
+        public static void GetYearPage(string cmcontinue, Action<string> onError, Action<YearCategoriesModel> onSuccess)
         {
             if (Instance == null)
                 Init();
 
-            Instance.StartCoroutine(GetYearsCoroutine(0, onError, onSuccess));
+            Instance.StartCoroutine(GetYearsCoroutine(cmcontinue, onError, onSuccess));
         }
-        public static void GetYears(uint page, Action<string> onError, Action<List<YearCategoriesModel.YearMember>> onSuccess)
+        private static IEnumerator GetYearsCoroutine(string cmcontinue, Action<string> onError, Action<YearCategoriesModel> onSuccess)
         {
-            if (Instance == null)
-                Init();
+            const uint perPage = 20;
+            string url = $"https://hotwheels.fandom.com/api.php?action=query&list=categorymembers&cmend={perPage}&cmtitle=Category:Hot_Wheels_by_Year&format=json";
 
-            Instance.StartCoroutine(GetYearsCoroutine(page, onError, onSuccess));
-        }
-        private static IEnumerator GetYearsCoroutine(uint page, Action<string> onError, Action<List<YearCategoriesModel.YearMember>> onSuccess)
-        {
-            // TODO: this will only work up to the year 2468
-            const string url = "https://hotwheels.fandom.com/api.php?action=query&list=categorymembers&cmlimit=500&cmtitle=Category:Hot_Wheels_by_Year&format=json";
+            if (Regex.Match(cmcontinue, "subcat\\|([^|]+)\\|\\w").Success)
+            {
+                Debug.Log($"*** Detected valid cmcontinue signature: {cmcontinue}");
+                url += $"&cmcontinue={cmcontinue}";
+            }
 
             UnityWebRequest www = UnityWebRequest.Get(url);
                 yield return www.SendWebRequest();
@@ -148,43 +148,15 @@ namespace HWAPI
                 string json = Encoding.UTF8.GetString(www.downloadHandler.data);
                 YearCategoriesModel model = JsonConvert.DeserializeObject<YearCategoriesModel>(json);
 
-                List<YearCategoriesModel.YearMember> yearsOnScreen = new();
-
-                uint onPage = 0;
-                const int yearsPerPage = 10;
-
                 for (int i = 0; i < model.YearCategories.Count; i++)
                 {
-                    // Assign the correct label to each year category
-                    if (model.YearCategories[i].title.StartsWith("Category:"))
-                    {
-                        string label = model.YearCategories[i].title;
-                        model.YearCategories[i].label = label.Replace("Category:", "");
-                    }
+                    string yearTitle = model.YearCategories[i].title;
 
-                    // Convert title to a web request safe string
-                    model.YearCategories[i].title = model.YearCategories[i].title.Replace(" ", "_");
-
-                    // Calculate on which page index the year will be assigned to
-                    if (i % yearsPerPage == 0)
-                        onPage++;
-                    model.YearCategories[i].onPage = onPage;
+                    model.YearCategories[i].title = yearTitle.Replace(" ", "_");
+                    model.YearCategories[i].label = yearTitle.Replace("Category:", "");
                 }
 
-                if (page > 0)
-                {
-                    foreach (YearCategoriesModel.YearMember member in model.YearCategories)
-                    {
-                        if (member.onPage == page)
-                            yearsOnScreen.Add(member);
-                    }
-                }
-                else
-                {
-                    yearsOnScreen.AddRange(model.YearCategories);
-                }
-
-                onSuccess(yearsOnScreen);
+                onSuccess(model);
             }
         }
 
