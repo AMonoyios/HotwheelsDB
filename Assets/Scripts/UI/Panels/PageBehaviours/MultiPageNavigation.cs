@@ -5,39 +5,31 @@
 
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
-using HWAPI;
-using SW.Logger;
-using SW.Utils;
 using TMPro;
+using UnityEngine.UI;
+using SW.Logger;
+using HWAPI;
 
-public sealed class TestingAPIRequests : MonoBehaviour
+public abstract class MultiPageNavigation : MonoBehaviour
 {
-    [SerializeField]
-    private Button previousPageBtn;
-    [SerializeField]
-    private Button nextPageBtn;
-    [SerializeField]
-    private TextMeshProUGUI pageIndexLbl;
-
+    [Header("Multi page navigation")]
+    public Button previousPageBtn;
+    public Button nextPageBtn;
+    public TextMeshProUGUI pageIndexLbl;
     [Space(10.0f)]
-    [Header("Debugging")]
-    [SerializeField]
-    private bool clearConsoleAfterRequest;
-    [SerializeField]
+
+    [HideInInspector]
+    public YearCategoriesModel yearPages;
+
     private int currentPageIndex;
     private readonly Dictionary<int, string> pagesReferenceIdDict = new();
-    [SerializeField]
     private string dictPageId;
-    [SerializeField]
     private bool hasFoundLastPage;
-    [SerializeField]
     private int lastPageIndex;
-    [SerializeField]
     private bool hasSetLastPageIndex;
 
-    private void Awake()
+    public virtual void Awake()
     {
         ShowFirstPage();
 
@@ -68,7 +60,6 @@ public sealed class TestingAPIRequests : MonoBehaviour
             }
             else
             {
-                // FIXME: in all else case of try get the dictPageId is wrong or not the one you want to show
                 CoreLogger.LogError($"Failed to find {dictPageId} in {nameof(pagesReferenceIdDict)} at index {currentPageIndex - 1}", true);
             }
         }
@@ -95,7 +86,7 @@ public sealed class TestingAPIRequests : MonoBehaviour
         }
     }
 
-    private void CalculateButtonStates()
+    public virtual void CalculateButtonStates()
     {
         previousPageBtn.interactable = currentPageIndex > 0;
         CoreLogger.LogMessage($"{nameof(previousPageBtn)} was set to {(currentPageIndex > 0 ? "true" : "false")}", true);
@@ -114,17 +105,18 @@ public sealed class TestingAPIRequests : MonoBehaviour
         }
     }
 
+    public abstract void PageBehaviour();
+
     private void RequestPage(string cmcontinue)
     {
-        if (clearConsoleAfterRequest)
-            CoreUtilities.ClearConsole(name);
-
         Request.GetYearPage
         (
             cmcontinue,
             onError: (error) => CoreLogger.LogError(error),
-            onSuccess: (yearPages) =>
+            onSuccess: (data) =>
             {
+                yearPages = data;
+
                 if (yearPages.Navigate == null)
                 {
                     hasFoundLastPage = true;
@@ -146,59 +138,10 @@ public sealed class TestingAPIRequests : MonoBehaviour
                     CoreLogger.LogWarning($"Page with reference id {yearPages.Navigate.next} already exists in {nameof(pagesReferenceIdDict)}", true);
                 }
 
-                // ---------- This is where you show all the data for each page -------------- //
-
-                // Debug.Log("-----------");
-                // for (int i = 0; i < yearPages.YearCategories.Count; i++)
-                // {
-                //     Debug.Log($"page label: {yearPages.YearCategories[i].label}");
-                //     Debug.Log($"page title: {yearPages.YearCategories[i].title}");
-                //     Debug.Log("~~~");
-                // }
-
-                // --------------------------------------------------------------------------- //
+                PageBehaviour();
 
                 pageIndexLbl.text = $"{currentPageIndex + 1}";
             }
-        );
-    }
-
-    #region Old methods
-        // Request.GetCarPageSections(testCar,
-        //     onError: (error) => CoreLogger.LogError($"Failed to find sections for {testCar} page. {error}"),
-        //     onSuccess: (sections) =>
-        //     {
-        //         int sectionIndex = Utils.GetIndexOfSection("Versions", sections);
-        //         if (sectionIndex < 0)
-        //         {
-        //             CoreLogger.LogError($"Versions section for {testCar} was not found!");
-        //             return;
-        //         }
-
-        //         Request.GetCarVersionsTable(testCar, sectionIndex,
-        //             onError: (error) => CoreLogger.LogError($"Failed to get {testCar} versions table. {error}"),
-        //             onSuccess: (versions) =>
-        //             {
-        //                 // getting the first car only for testing purposes
-        //                 print($"XXX versions count: {versions.Count}");
-        //                 VersionsTableCarInfo car = versions[0];
-
-        //                 Request.GetSprite(car.Photo,
-        //                     1080,
-        //                     onError: (error) => image.sprite = error,
-        //                     onSuccess: (success) => image.sprite = success
-        //                 );
-        //             }
-        //         );
-        //     }
-        // );
-        #endregion
-
-    public void TestSourceQuery(string query)
-    {
-        Request.GetJsonData(query,
-            onError: (error) => CoreLogger.LogError(error),
-            onSuccess: (photo) => CoreLogger.LogMessage(photo)
         );
     }
 }
