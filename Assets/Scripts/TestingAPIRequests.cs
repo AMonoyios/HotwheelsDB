@@ -63,9 +63,12 @@ public sealed class TestingAPIRequests : MonoBehaviour
             {
                 CoreLogger.LogMessage($"Found page id {dictPageId} in {nameof(pagesReferenceIdDict)} at index {currentPageIndex - 1}", true);
                 RequestPage(dictPageId);
+
+                CalculateButtonStates();
             }
             else
             {
+                // FIXME: in all else case of try get the dictPageId is wrong or not the one you want to show
                 CoreLogger.LogError($"Failed to find {dictPageId} in {nameof(pagesReferenceIdDict)} at index {currentPageIndex - 1}", true);
             }
         }
@@ -73,8 +76,6 @@ public sealed class TestingAPIRequests : MonoBehaviour
         {
             ShowFirstPage();
         }
-
-        CalculateButtonStates();
     }
 
     private void ShowNextPage()
@@ -83,15 +84,15 @@ public sealed class TestingAPIRequests : MonoBehaviour
         {
             CoreLogger.LogMessage($"Found page id {dictPageId} in {nameof(pagesReferenceIdDict)} at index {currentPageIndex}", true);
             RequestPage(dictPageId);
+
+            currentPageIndex++;
+
+            CalculateButtonStates();
         }
         else
         {
             CoreLogger.LogError($"Failed to find {dictPageId} in {nameof(pagesReferenceIdDict)} at index {currentPageIndex}", true);
         }
-
-        currentPageIndex++;
-
-        CalculateButtonStates();
     }
 
     private void CalculateButtonStates()
