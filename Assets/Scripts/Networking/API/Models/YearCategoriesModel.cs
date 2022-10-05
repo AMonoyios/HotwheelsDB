@@ -20,8 +20,6 @@ namespace HWAPI
         {
             [JsonProperty("cmcontinue")]
             public string next;
-
-            public string previous;
         }
 
         // TODO: For each different variant of navigation create a parent class that derives from the above and has the bellow parameters/functions ekatalaves ti enoo
@@ -42,7 +40,17 @@ namespace HWAPI
             public string label;
         }
 
-        public List<YearMember> YearCategories => query.years;
+        public List<YearMember> YearCategories
+        {
+            get
+            {
+                return query.years;
+            }
+            set
+            {
+                query.years = value;
+            }
+        }
         public Continue Navigate => navigation;
     }
 }

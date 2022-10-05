@@ -29,12 +29,37 @@ public abstract class MultiPageNavigation<T> : MonoBehaviour where T : YearCateg
     private int lastPageIndex;
     private bool hasSetLastPageIndex;
 
-    public virtual void Awake()
+    private void Awake()
     {
+        Init();
+
         ShowFirstPage();
 
-        previousPageBtn.onClick.AddListener(() => ShowPreviousPage());
-        nextPageBtn.onClick.AddListener(() => ShowNextPage());
+        previousPageBtn.onClick.AddListener(() =>
+        {
+            ShowPreviousPage();
+            OnButtonClick();
+        });
+        nextPageBtn.onClick.AddListener(() =>
+        {
+            ShowNextPage();
+            OnButtonClick();
+        });
+    }
+
+    public virtual void Init()
+    {
+        // this is meant to be overwritten
+    }
+
+    public virtual void OnButtonClick()
+    {
+        // this is meant to be overwritten
+    }
+
+    public virtual void OnComplete()
+    {
+        // this is meant to be overwritten
     }
 
     private void ShowFirstPage()
@@ -112,11 +137,13 @@ public abstract class MultiPageNavigation<T> : MonoBehaviour where T : YearCateg
         Request.GetYearPage<T>
         (
             cmcontinue,
-            onError: (error) => CoreLogger.LogError(error),
+            onError: (error) =>
+            {
+                CoreLogger.LogError(error);
+                OnComplete();
+            },
             onSuccess: (data) =>
             {
-                // yearPages = data;
-
                 if (data.Navigate == null)
                 {
                     hasFoundLastPage = true;
@@ -141,6 +168,8 @@ public abstract class MultiPageNavigation<T> : MonoBehaviour where T : YearCateg
                 PageBehaviour(data);
 
                 pageIndexLbl.text = $"{currentPageIndex + 1}";
+
+                OnComplete();
             }
         );
     }

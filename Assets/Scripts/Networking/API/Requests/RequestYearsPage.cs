@@ -7,6 +7,8 @@ namespace HWAPI
 {
     using System;
     using System.Collections;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Text;
     using System.Text.RegularExpressions;
     using Newtonsoft.Json;
@@ -22,17 +24,10 @@ namespace HWAPI
 
             Instance.StartCoroutine(GetYearsCoroutine(cmcontinue, onError, onSuccess));
         }
-        public static void GetYearPage(string cmcontinue, Action<string> onError, Action<YearCategoriesModel> onSuccess)
-        {
-            if (Instance == null)
-                Init();
-
-            Instance.StartCoroutine(GetYearsCoroutine(cmcontinue, onError, onSuccess));
-        }
         private static IEnumerator GetYearsCoroutine<T>(string cmcontinue, Action<string> onError, Action<T> onSuccess) where T : YearCategoriesModel
         {
             const uint perPage = 20;
-            string url = $"https://hotwheels.fandom.com/api.php?action=query&list=categorymembers&cmend={perPage}&cmtitle=Category:Hot_Wheels_by_Year&format=json";
+            string url = $"https://hotwheels.fandom.com/api.php?action=query&list=categorymembers&cmend={perPage}&cmdir=descending&cmtitle=Category:Hot_Wheels_by_Year&format=json";
 
             if (Regex.Match(cmcontinue, "subcat\\|([^|]+)\\|\\w").Success)
             {
@@ -59,6 +54,9 @@ namespace HWAPI
                     model.YearCategories[i].title = yearTitle.Replace(" ", "_");
                     model.YearCategories[i].label = yearTitle.Replace("Category:", "");
                 }
+
+                model.YearCategories = model.YearCategories.OrderBy(entry => entry.title).ToList();
+                model.YearCategories.Reverse();
 
                 onSuccess(model);
             }

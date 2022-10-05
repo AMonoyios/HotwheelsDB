@@ -15,11 +15,20 @@ using SW.Utils.ResourcesHandler;
 
 public sealed class YearOptionsPanel : MultiPageNavigation<YearCategoriesModel> // TODO: The parent class that derived p to subclass to basic navigation model ena mbeni gia to ka8e panel
 {
+    [Header("Extra navigation feature")]
+    [SerializeField]
+    private ScrollRect scrollRect;
+
     [Header("Page specific data")]
     [SerializeField]
     private Transform container;
     [SerializeField]
     private GameObject yearOptionPrefab;
+
+    public override void OnComplete()
+    {
+        scrollRect.verticalNormalizedPosition = 1;
+    }
 
     public override void PageBehaviour(YearCategoriesModel data)
     {
