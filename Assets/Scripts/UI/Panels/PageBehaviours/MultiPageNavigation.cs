@@ -11,7 +11,7 @@ using UnityEngine.UI;
 using SW.Logger;
 using HWAPI;
 
-public abstract class MultiPageNavigation : MonoBehaviour
+public abstract class MultiPageNavigation<T> : MonoBehaviour where T : YearCategoriesModel // TODO: replace this with the most basic model of navigation panels
 {
     [Header("Multi page navigation")]
     public Button previousPageBtn;
@@ -19,8 +19,8 @@ public abstract class MultiPageNavigation : MonoBehaviour
     public TextMeshProUGUI pageIndexLbl;
     [Space(10.0f)]
 
-    [HideInInspector]
-    public YearCategoriesModel yearPages;
+    // [HideInInspector]
+    // public YearCategoriesModel yearPages;
 
     private int currentPageIndex;
     private readonly Dictionary<int, string> pagesReferenceIdDict = new();
@@ -105,40 +105,40 @@ public abstract class MultiPageNavigation : MonoBehaviour
         }
     }
 
-    public abstract void PageBehaviour();
+    public abstract void PageBehaviour(T data);
 
     private void RequestPage(string cmcontinue)
     {
-        Request.GetYearPage
+        Request.GetYearPage<T>
         (
             cmcontinue,
             onError: (error) => CoreLogger.LogError(error),
             onSuccess: (data) =>
             {
-                yearPages = data;
+                // yearPages = data;
 
-                if (yearPages.Navigate == null)
+                if (data.Navigate == null)
                 {
                     hasFoundLastPage = true;
                     CalculateButtonStates();
                 }
-                else if (!pagesReferenceIdDict.ContainsValue(yearPages.Navigate.next))
+                else if (!pagesReferenceIdDict.ContainsValue(data.Navigate.next))
                 {
-                    if (pagesReferenceIdDict.TryAdd(currentPageIndex, yearPages.Navigate.next))
+                    if (pagesReferenceIdDict.TryAdd(currentPageIndex, data.Navigate.next))
                     {
-                        CoreLogger.LogMessage($"Succesfully added {yearPages.Navigate.next} to dictionary with key {currentPageIndex}");
+                        CoreLogger.LogMessage($"Succesfully added {data.Navigate.next} to dictionary with key {currentPageIndex}");
                     }
                     else
                     {
-                        CoreLogger.LogError($"Failed to add {yearPages.Navigate.next} to dictionary with key {currentPageIndex}");
+                        CoreLogger.LogError($"Failed to add {data.Navigate.next} to dictionary with key {currentPageIndex}");
                     }
                 }
                 else
                 {
-                    CoreLogger.LogWarning($"Page with reference id {yearPages.Navigate.next} already exists in {nameof(pagesReferenceIdDict)}", true);
+                    CoreLogger.LogWarning($"Page with reference id {data.Navigate.next} already exists in {nameof(pagesReferenceIdDict)}", true);
                 }
 
-                PageBehaviour();
+                PageBehaviour(data);
 
                 pageIndexLbl.text = $"{currentPageIndex + 1}";
             }

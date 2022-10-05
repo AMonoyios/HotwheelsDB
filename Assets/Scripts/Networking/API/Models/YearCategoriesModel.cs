@@ -7,8 +7,10 @@ namespace HWAPI
     using System.Collections.Generic;
     using Newtonsoft.Json;
 
-    public sealed class YearCategoriesModel
+    public class YearCategoriesModel
     {
+        // TODO: make the most basic version of navigation response a sub class
+
         [JsonProperty("query")]
         private Query query;
         [JsonProperty("continue")]
@@ -21,6 +23,8 @@ namespace HWAPI
 
             public string previous;
         }
+
+        // TODO: For each different variant of navigation create a parent class that derives from the above and has the bellow parameters/functions ekatalaves ti enoo
 
         private class Query
         {

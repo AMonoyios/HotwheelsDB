@@ -13,7 +13,7 @@ using SW.Utils;
 using TMPro;
 using SW.Utils.ResourcesHandler;
 
-public sealed class YearOptionsPanel : MultiPageNavigation
+public sealed class YearOptionsPanel : MultiPageNavigation<YearCategoriesModel> // TODO: The parent class that derived p to subclass to basic navigation model ena mbeni gia to ka8e panel
 {
     [Header("Page specific data")]
     [SerializeField]
@@ -21,18 +21,16 @@ public sealed class YearOptionsPanel : MultiPageNavigation
     [SerializeField]
     private GameObject yearOptionPrefab;
 
-    public override void PageBehaviour()
+    public override void PageBehaviour(YearCategoriesModel data)
     {
         // ---------- This is where you show all the data for each page -------------- //
 
         container.DestroyAllChildren();
 
-        // TODO: mql5
-
-        for (int i = 0; i < yearPages.YearCategories.Count; i++)
+        for (int i = 0; i < data.YearCategories.Count; i++)
         {
             YearOption newYearOption = Instantiate(yearOptionPrefab, container).GetComponent<YearOption>();
-            newYearOption.yearLabel.text = yearPages.YearCategories[i].label;
+            newYearOption.yearLabel.text = data.YearCategories[i].label;
         }
 
         // --------------------------------------------------------------------------- //

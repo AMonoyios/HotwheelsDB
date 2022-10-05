@@ -15,6 +15,13 @@ namespace HWAPI
 
     public static partial class Request
     {
+        public static void GetYearPage<T>(string cmcontinue, Action<string> onError, Action<T> onSuccess) where T : YearCategoriesModel
+        {
+            if (Instance == null)
+                Init();
+
+            Instance.StartCoroutine(GetYearsCoroutine(cmcontinue, onError, onSuccess));
+        }
         public static void GetYearPage(string cmcontinue, Action<string> onError, Action<YearCategoriesModel> onSuccess)
         {
             if (Instance == null)
@@ -22,7 +29,7 @@ namespace HWAPI
 
             Instance.StartCoroutine(GetYearsCoroutine(cmcontinue, onError, onSuccess));
         }
-        private static IEnumerator GetYearsCoroutine(string cmcontinue, Action<string> onError, Action<YearCategoriesModel> onSuccess)
+        private static IEnumerator GetYearsCoroutine<T>(string cmcontinue, Action<string> onError, Action<T> onSuccess) where T : YearCategoriesModel
         {
             const uint perPage = 20;
             string url = $"https://hotwheels.fandom.com/api.php?action=query&list=categorymembers&cmend={perPage}&cmtitle=Category:Hot_Wheels_by_Year&format=json";
@@ -43,7 +50,7 @@ namespace HWAPI
             else
             {
                 string json = Encoding.UTF8.GetString(www.downloadHandler.data);
-                YearCategoriesModel model = JsonConvert.DeserializeObject<YearCategoriesModel>(json);
+                T model = JsonConvert.DeserializeObject<T>(json);
 
                 for (int i = 0; i < model.YearCategories.Count; i++)
                 {
