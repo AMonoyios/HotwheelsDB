@@ -17,14 +17,14 @@ namespace HWAPI
 
     public static partial class Request
     {
-        public static void GetYearPage<T>(string cmcontinue, Action<string> onError, Action<T> onSuccess) where T : YearCategoriesModel
+        public static void GetYearPage<T>(string cmcontinue, Action<string> onError, Action<T> onSuccess) where T : BaseNavigateModel
         {
             if (Instance == null)
                 Init();
 
             Instance.StartCoroutine(GetYearsCoroutine(cmcontinue, onError, onSuccess));
         }
-        private static IEnumerator GetYearsCoroutine<T>(string cmcontinue, Action<string> onError, Action<T> onSuccess) where T : YearCategoriesModel
+        private static IEnumerator GetYearsCoroutine<T>(string cmcontinue, Action<string> onError, Action<T> onSuccess) where T : BaseNavigateModel
         {
             const uint perPage = 20;
             string url = $"https://hotwheels.fandom.com/api.php?action=query&list=categorymembers&cmend={perPage}&cmdir=descending&cmtitle=Category:Hot_Wheels_by_Year&format=json";
@@ -46,17 +46,6 @@ namespace HWAPI
             {
                 string json = Encoding.UTF8.GetString(www.downloadHandler.data);
                 T model = JsonConvert.DeserializeObject<T>(json);
-
-                for (int i = 0; i < model.YearCategories.Count; i++)
-                {
-                    string yearTitle = model.YearCategories[i].title;
-
-                    model.YearCategories[i].title = yearTitle.Replace(" ", "_");
-                    model.YearCategories[i].label = yearTitle.Replace("Category:", "");
-                }
-
-                model.YearCategories = model.YearCategories.OrderBy(entry => entry.title).ToList();
-                model.YearCategories.Reverse();
 
                 onSuccess(model);
             }

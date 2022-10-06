@@ -7,22 +7,10 @@ namespace HWAPI
     using System.Collections.Generic;
     using Newtonsoft.Json;
 
-    public class YearCategoriesModel
+    public class YearCategoriesModel : BaseNavigateModel
     {
-        // TODO: make the most basic version of navigation response a sub class
-
         [JsonProperty("query")]
-        private Query query;
-        [JsonProperty("continue")]
-        private Continue navigation;
-
-        public class Continue
-        {
-            [JsonProperty("cmcontinue")]
-            public string next;
-        }
-
-        // TODO: For each different variant of navigation create a parent class that derives from the above and has the bellow parameters/functions ekatalaves ti enoo
+        private readonly Query query;
 
         private class Query
         {
@@ -51,6 +39,5 @@ namespace HWAPI
                 query.years = value;
             }
         }
-        public Continue Navigate => navigation;
     }
 }

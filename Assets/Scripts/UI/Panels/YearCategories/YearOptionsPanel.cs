@@ -12,8 +12,9 @@ using SW.Logger;
 using SW.Utils;
 using TMPro;
 using SW.Utils.ResourcesHandler;
+using System.Linq;
 
-public sealed class YearOptionsPanel : MultiPageNavigation<YearCategoriesModel> // TODO: The parent class that derived p to subclass to basic navigation model ena mbeni gia to ka8e panel
+public sealed class YearOptionsPanel : MultiPageNavigation<YearCategoriesModel>
 {
     [Header("Extra navigation feature")]
     [SerializeField]
@@ -32,7 +33,16 @@ public sealed class YearOptionsPanel : MultiPageNavigation<YearCategoriesModel> 
 
     public override void PageBehaviour(YearCategoriesModel data)
     {
-        // ---------- This is where you show all the data for each page -------------- //
+        for (int i = 0; i < data.YearCategories.Count; i++)
+        {
+            string yearTitle = data.YearCategories[i].title;
+
+            data.YearCategories[i].title = yearTitle.Replace(" ", "_");
+            data.YearCategories[i].label = yearTitle.Replace("Category:", "");
+        }
+
+        data.YearCategories = data.YearCategories.OrderBy(entry => entry.title).ToList();
+        data.YearCategories.Reverse();
 
         container.DestroyAllChildren();
 
@@ -41,7 +51,5 @@ public sealed class YearOptionsPanel : MultiPageNavigation<YearCategoriesModel> 
             YearOption newYearOption = Instantiate(yearOptionPrefab, container).GetComponent<YearOption>();
             newYearOption.yearLabel.text = data.YearCategories[i].label;
         }
-
-        // --------------------------------------------------------------------------- //
     }
 }

@@ -11,16 +11,13 @@ using UnityEngine.UI;
 using SW.Logger;
 using HWAPI;
 
-public abstract class MultiPageNavigation<T> : MonoBehaviour where T : YearCategoriesModel // TODO: replace this with the most basic model of navigation panels
+public abstract class MultiPageNavigation<T> : MonoBehaviour where T : BaseNavigateModel
 {
     [Header("Multi page navigation")]
     public Button previousPageBtn;
     public Button nextPageBtn;
     public TextMeshProUGUI pageIndexLbl;
     [Space(10.0f)]
-
-    // [HideInInspector]
-    // public YearCategoriesModel yearPages;
 
     private int currentPageIndex;
     private readonly Dictionary<int, string> pagesReferenceIdDict = new();
