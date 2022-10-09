@@ -68,8 +68,8 @@ public sealed class GameManager : MonoPersistentSingleton<GameManager>
     public static void Restart()
     {
         // Start from splash
-        SceneManager.LoadScene(0, LoadSceneMode.Single);
-        SceneManager.SetActiveScene(SceneManager.GetSceneAt(0));
+        SceneManager.LoadScene(SceneRepo.Splash, LoadSceneMode.Single);
+        SceneManager.SetActiveScene(SceneManager.GetSceneAt(SceneRepo.Splash));
 
         // if in dev mode and having it open close it
         if (IsDevMode && DevToolsUI.instance.isActiveAndEnabled)

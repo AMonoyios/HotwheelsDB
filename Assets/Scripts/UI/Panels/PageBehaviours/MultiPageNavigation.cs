@@ -11,7 +11,7 @@ using UnityEngine.UI;
 using SW.Logger;
 using HWAPI;
 
-public abstract class MultiPageNavigation<T> : MonoBehaviour where T : BaseNavigateModel
+public abstract class MultiPageNavigation<T> : BasePanel where T : BaseNavigateModel
 {
     [Header("Multi page navigation")]
     public Button previousPageBtn;

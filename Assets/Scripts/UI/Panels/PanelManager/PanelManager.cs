@@ -24,8 +24,11 @@ namespace SW.UI
 
         private readonly List<PanelModelInstance> panelInstanceList = new();
 
-        public void ShowPanel(string id)
+        public void ShowPanel(string id, bool hideLastPanel = false)
         {
+            if (hideLastPanel)
+                HideLastPanel();
+
             PanelModel panelInstance = panels.Find(panel => panel.id == id);
 
             if (panelInstance == null)
