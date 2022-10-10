@@ -26,6 +26,7 @@ namespace HWAPI
             public string title;
 
             public string label;
+            public string page;
         }
 
         public List<YearMember> YearCategories

@@ -13,7 +13,18 @@ using SW.Logger;
 [RequireComponent(typeof(Button))]
 public sealed class YearOption : MonoBehaviour
 {
-    public TextMeshProUGUI yearLabel;
+    [SerializeField]
+    private TextMeshProUGUI yearLabel;
+
+    private string title;
+    private string page;
+
+    public void Init(string label, string title, string page)
+    {
+        yearLabel.text = label;
+        this.title = title;
+        this.page = page;
+    }
 
     private void Awake()
     {
@@ -22,6 +33,6 @@ public sealed class YearOption : MonoBehaviour
 
     public void ShowYear()
     {
-        CoreLogger.LogMessage($"Clicked on {yearLabel.text}");
+        CoreLogger.LogMessage($"Clicked on {yearLabel.text}, title: {title}, page: {page}");
     }
 }

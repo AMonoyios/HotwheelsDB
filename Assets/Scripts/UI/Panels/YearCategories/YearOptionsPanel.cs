@@ -39,6 +39,7 @@ public sealed class YearOptionsPanel : MultiPageNavigation<YearCategoriesModel>
 
             data.YearCategories[i].title = yearTitle.Replace(" ", "_");
             data.YearCategories[i].label = yearTitle.Replace("Category:", "");
+            data.YearCategories[i].page  = $"List_of_{CoreResources.GetIntFromString(yearTitle)}_Hot_Wheels";
         }
 
         data.YearCategories = data.YearCategories.OrderBy(entry => entry.title).ToList();
@@ -48,8 +49,9 @@ public sealed class YearOptionsPanel : MultiPageNavigation<YearCategoriesModel>
 
         for (int i = 0; i < data.YearCategories.Count; i++)
         {
-            YearOption newYearOption = Instantiate(yearOptionPrefab, container).GetComponent<YearOption>();
-            newYearOption.yearLabel.text = data.YearCategories[i].label;
+            Instantiate(yearOptionPrefab, container)
+                .GetComponent<YearOption>()
+                .Init(data.YearCategories[i].label, data.YearCategories[i].title, data.YearCategories[i].page);
         }
     }
 }
