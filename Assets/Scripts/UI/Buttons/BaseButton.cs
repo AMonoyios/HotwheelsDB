@@ -9,12 +9,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+using SW.UI;
+
 [RequireComponent(typeof(Button))]
 public abstract class BaseButton : MonoBehaviour
 {
     [Header("Base Button properties")]
     [SerializeField]
     private Button button;
+
+    //[HideInInspector]
+    public PanelManager _panelManager;
+
+    private void Start()
+    {
+        // Cache the manager
+        _panelManager = PanelManager.Instance;
+    }
 
     private void Awake()
     {

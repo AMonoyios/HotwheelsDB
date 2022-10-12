@@ -14,6 +14,8 @@ using TMPro;
 using SW.Utils.ResourcesHandler;
 using System.Linq;
 
+using SW.UI;
+
 public sealed class YearOptionsPanel : MultiPageNavigation<YearCategoriesModel>
 {
     [Header("Extra navigation feature")]
