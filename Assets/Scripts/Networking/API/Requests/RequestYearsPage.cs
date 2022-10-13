@@ -3,18 +3,16 @@
  * GitHub: https://github.com/AMonoyios?tab=repositories
  */
 
+using System;
+using System.Collections;
+using System.Text;
+using System.Text.RegularExpressions;
+using Newtonsoft.Json;
+using UnityEngine;
+using UnityEngine.Networking;
+
 namespace HWAPI
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Text.RegularExpressions;
-    using Newtonsoft.Json;
-    using UnityEngine;
-    using UnityEngine.Networking;
-
     public static partial class Request
     {
         public static void GetYearPage<T>(string cmcontinue, Action<string> onError, Action<T> onSuccess) where T : BaseNavigateModel

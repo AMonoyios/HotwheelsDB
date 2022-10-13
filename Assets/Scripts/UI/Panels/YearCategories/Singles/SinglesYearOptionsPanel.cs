@@ -14,7 +14,7 @@ using TMPro;
 using SW.Utils.ResourcesHandler;
 using System.Linq;
 
-public sealed class YearOptionsPanel : MultiPageNavigation<YearCategoriesModel>
+public sealed class SinglesYearOptionsPanel : MultiPageNavigation<YearCategoriesModel>
 {
     [Header("Extra navigation feature")]
     [SerializeField]
@@ -25,6 +25,8 @@ public sealed class YearOptionsPanel : MultiPageNavigation<YearCategoriesModel>
     private Transform container;
     [SerializeField]
     private GameObject yearOptionPrefab;
+
+    private const string undesiredOption = "5-Packs";
 
     public override void OnComplete()
     {
@@ -39,7 +41,7 @@ public sealed class YearOptionsPanel : MultiPageNavigation<YearCategoriesModel>
 
             data.YearCategories[i].title = yearTitle.Replace(" ", "_");
             data.YearCategories[i].label = yearTitle.Replace("Category:", "");
-            data.YearCategories[i].page  = $"List_of_{CoreResources.GetIntFromString(yearTitle)}_Hot_Wheels";
+            data.YearCategories[i].targetPageTitle  = $"List_of_{CoreResources.GetIntFromString(yearTitle)}_Hot_Wheels";
         }
 
         data.YearCategories = data.YearCategories.OrderBy(entry => entry.title).ToList();
@@ -49,9 +51,16 @@ public sealed class YearOptionsPanel : MultiPageNavigation<YearCategoriesModel>
 
         for (int i = 0; i < data.YearCategories.Count; i++)
         {
+            // FIXME: This is a cheaty way to skip the 5-Packs in the category of singles.
+            if (data.YearCategories[i].title.Contains(undesiredOption))
+            {
+                CoreLogger.LogWarning($"Skipped {data.YearCategories[i].label}. Does not match current request requirements");
+                continue;
+            }
+
             Instantiate(yearOptionPrefab, container)
-                .GetComponent<YearOption>()
-                .Init(data.YearCategories[i].label, data.YearCategories[i].title, data.YearCategories[i].page);
+                .GetComponent<SinglesYearOption>()
+                .Init(data.YearCategories[i].label, data.YearCategories[i].title, data.YearCategories[i].targetPageTitle);
         }
     }
 }
