@@ -10,12 +10,13 @@ namespace HWAPI
     using UnityEngine;
     using UnityEngine.Networking;
 
+    // TODO_HIGH: Remove partial classes and make the different request subclasses that derive from a main execute request task (ask daniel if stuck - common)
     public static partial class Request
     {
         private static class Queries
         {
+            // OBSOLETE: Old Queries - remove later
             #region Old Queries
-
             /*
 
             /// <summary>
@@ -59,7 +60,6 @@ namespace HWAPI
             }
 
             */
-
             #endregion
 
             public static string LocalMissingImage()
@@ -111,6 +111,7 @@ namespace HWAPI
             }
         }
 
+        // OBSOLETE: Old way to request data from API - remove
         #region Old Methods
         /*
 
@@ -161,7 +162,6 @@ namespace HWAPI
 
                 string imageUrl = imageModel.ImagesData[0].thumbnail.source;
 
-                //FIXME: change the replace with proper resize parsing
                 // if (overrideSize > 0)
                 //     imageUrl = imageUrl.Replace("75", overrideSize.ToString());
 

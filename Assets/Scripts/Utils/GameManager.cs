@@ -94,7 +94,7 @@ public sealed class GameManager : MonoPersistentSingleton<GameManager>
         Application.Quit();
     }
 
-    // TODO: Make sceneIndex into a class with all scenes as enums
+    // TODO_LOW: Make sceneIndex into a class with all scenes as enums
     public void LoadScene(int sceneIndex)
     {
         SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene());

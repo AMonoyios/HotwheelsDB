@@ -44,8 +44,7 @@ public sealed class DevGeneralPanelUI : MonoBehaviour
         userIDTxt.text += SystemInfo.deviceName;
         localTimeCached = localTimeTxt.text;
         localTimeTxt.text += GameManager.GetLocalTime();
-        //FIXME: when API is set replace this with the last update of the api page.
-        lastServerUpdateTimeTxt.text += GameManager.GetLocalDate() + " | " + GameManager.GetLocalTime();
+        lastServerUpdateTimeTxt.text += FetchFandomAPITime();
         CoreLogger.LogMessage("Initializing general info.");
     }
 
@@ -56,9 +55,14 @@ public sealed class DevGeneralPanelUI : MonoBehaviour
 
     private void UpdateTimeInfo()
     {
-        //FIXME: When API is set add the lastServerUpdateTimeTxt here.
         localTimeTxt.text = localTimeCached + GameManager.GetLocalDate() + " | " + GameManager.GetLocalTime();
         CoreLogger.LogMessage("Updating time info.");
+    }
+
+    // TODO_LOW: Add the fandom page last update time here
+    private string FetchFandomAPITime()
+    {
+        return GameManager.GetLocalDate() + " | " + GameManager.GetLocalTime();
     }
 
     public static void RestartApp()

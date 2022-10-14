@@ -51,7 +51,7 @@ public sealed class SinglesYearOptionsPanel : MultiPageNavigation<YearCategories
 
         for (int i = 0; i < data.YearCategories.Count; i++)
         {
-            // FIXME: This is a cheaty way to skip the 5-Packs in the category of singles.
+            // HACK: This is a cheaty way to skip the 5-Packs in the category of singles.
             if (data.YearCategories[i].title.Contains(undesiredOption))
             {
                 CoreLogger.LogWarning($"Skipped {data.YearCategories[i].label}. Does not match current request requirements");

@@ -26,7 +26,8 @@ namespace HWAPI
         {
             string url = $"https://hotwheels.fandom.com/api.php?action=parse&page={page}&section={section}&format=json";
 
-            UnityWebRequest www = UnityWebRequest.Get(url);
+            // TODO_HIGH: Make this a base class that can be overwritten
+            using UnityWebRequest www = UnityWebRequest.Get(url);
                 yield return www.SendWebRequest();
 
             if (www.result != UnityWebRequest.Result.Success)

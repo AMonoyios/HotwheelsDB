@@ -76,6 +76,7 @@ public sealed class SinglesYearOption : MonoBehaviour
                                     Cars.Add(data.GetCar(carIndex));
                                 }
 
+                                // BUG: Move this outside of the success state of this request to prevent multiple intances executing
                                 onComplete(Cars);
                             }
                     );
