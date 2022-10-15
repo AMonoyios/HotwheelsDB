@@ -14,24 +14,21 @@ namespace HWAPI
     public sealed class SinglesPageSectionModel
     {
         [JsonProperty("parse")]
-        private readonly Parse parse;
+        public Parse parse;
 
-        private class Parse
+        public class Parse
         {
             [JsonProperty("title")]
             public string title;
 
-            [JsonProperty("links")]
-            public List<Links> cars;
+            [JsonProperty("text")]
+            public Text table;
 
-            [JsonProperty("images")]
-            public List<string> images;
-        }
-
-        private class Links
-        {
-            [JsonProperty("*")]
-            public string name;
+            public class Text
+            {
+                [JsonProperty("*")]
+                public string content;
+            }
         }
 
         public class Car
@@ -43,28 +40,6 @@ namespace HWAPI
             }
             public string Name { get; }
             public string Image { get; }
-        }
-
-        public int TotalCars
-        {
-            get
-            {
-                return parse.cars.Count;
-            }
-        }
-
-        public Car GetCar(int index)
-        {
-            if (index > parse.cars.Count || index > parse.images.Count)
-            {
-                CoreLogger.LogError($"Index for page section is out of bounds. Index: {index}, Max possible index: cars => {parse.cars.Count} images => {parse.images.Count}");
-                return null;
-            }
-
-            string name = parse.cars[index].name;
-            string image = parse.images[index];
-
-            return new(name, image);
         }
     }
 }

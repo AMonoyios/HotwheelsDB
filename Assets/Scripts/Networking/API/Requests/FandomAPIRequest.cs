@@ -3,111 +3,106 @@
  * GitHub: https://github.com/AMonoyios?tab=repositories
  */
 
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using SW.Logger;
+using UnityEngine;
+using UnityEngine.Networking;
+
 namespace HWAPI
 {
-    using System;
-    using System.Collections;
-    using UnityEngine;
-    using UnityEngine.Networking;
+    public class RequestAPIFandom : MonoPersistentSingleton<RequestAPIFandom>{}
 
-    // TODO_HIGH: Remove partial classes and make the different request subclasses that derive from a main execute request task (ask daniel if stuck - common)
-    public static partial class Request
+    public class FandomAPIRequest<T>
     {
-        private static class Queries
+        public static void Request(string url, Action<string> onError, Action<T> onSuccess)
         {
-            // OBSOLETE: Old Queries - remove later
-            #region Old Queries
-            /*
-
-            /// <summary>
-            ///     Gets the first 100(by default, max is 500) years of hotwheels
-            /// </summary>
-            public static string AllYears(ushort cmLimit = 100)
-            {
-                return $"https://hotwheels.fandom.com/api.php?action=query&list=categorymembers&cmlimit={cmLimit}&cmtitle=Category:Hot_Wheels_by_Year&format=json";
-            }
-
-            /// <summary>
-            ///     Gets the data for specific year
-            /// </summary>
-            public static string YearOf(int targetYear, ushort cmLimit = 100)
-            {
-                return $"https://hotwheels.fandom.com/api.php?action=query&list=categorymembers&cmlimit={cmLimit}&cmtitle=Category:{targetYear}_Hot_Wheels&format=json";
-            }
-
-            /// <summary>
-            ///     Gets an image
-            /// </summary>
-            public static string ImageURL(string photoName, int photoSize = 50)
-            {
-                return "";
-            }
-
-            /// <summary>
-            ///     Query to retrieve all sections for a car's page
-            /// </summary>
-            public static string PageSections(string carName)
-            {
-                return $"https://hotwheels.fandom.com/api.php?format=json&action=parse&page={UnityWebRequest.EscapeURL(carName.Replace(" ", "_"))}&prop=sections";
-            }
-
-            /// <summary>
-            ///     Query for versions table for a specific car
-            /// </summary>
-            public static string VersionsTable(string carName, int sectionIndex)
-            {
-                return $"https://hotwheels.fandom.com/api.php?format=json&action=parse&page={UnityWebRequest.EscapeURL(carName.Replace(" ", "_"))}&prop=wikitext&section={sectionIndex}";
-            }
-
-            */
-            #endregion
-
-            public static string LocalMissingImage()
-            {
-                return "MissingImage.png";
-            }
-
-            public static string CloudMissingImage()
-            {
-                return "File:Image_Not_Available.jpg";
-            }
+            RequestAPIFandom.Instance.StartCoroutine(RequestCoroutine(url, onError, onSuccess));
         }
-
-        #region MonoBehaviour
-        private class CoreNetworkingMonoBehaviour : MonoPersistentSingleton<CoreNetworkingMonoBehaviour> {}
-        private static CoreNetworkingMonoBehaviour Instance;
-        private static void Init()
+        private static IEnumerator RequestCoroutine(string url, Action<string> onError, Action<T> onSuccess)
         {
-            if (Instance == null)
+            using UnityWebRequest www = UnityWebRequest.Get(url);
+                yield return www.SendWebRequest();
+
+            if (www.result != UnityWebRequest.Result.Success)
             {
-                GameObject gameobject = new("NetworkingAPIRequests");
-                Instance = gameobject.AddComponent<CoreNetworkingMonoBehaviour>();
-            }
-        }
-        #endregion
-
-        /// <summary>
-        ///     Get the raw data from a url
-        /// </summary>
-        public static void GetJsonData(string url, Action<string> onError, Action<string> onSuccess)
-        {
-            if (Instance == null)
-                Init();
-
-            Instance.StartCoroutine(GetJsonDataCoroutine(url, onError, onSuccess));
-        }
-        private static IEnumerator GetJsonDataCoroutine(string url, Action<string> onError, Action<string> onSuccess)
-        {
-            using UnityWebRequest unityWebRequest = UnityWebRequest.Get(url);
-                yield return unityWebRequest.SendWebRequest();
-
-            if (unityWebRequest.result == UnityWebRequest.Result.ConnectionError || unityWebRequest.result == UnityWebRequest.Result.ProtocolError)
-            {
-                onError(unityWebRequest.error);
+                onError($"Failed to fetch url {url}. Error: {www.error}");
             }
             else
             {
-                onSuccess(unityWebRequest.downloadHandler.text);
+                string json = Encoding.UTF8.GetString(www.downloadHandler.data);
+                T model = JsonConvert.DeserializeObject<T>(json);
+                onSuccess(model);
+            }
+        }
+
+        public static void BundleRequest(List<string> urls, Action<string> onError, Action<List<T>> onSuccess)
+        {
+            RequestAPIFandom.Instance.StartCoroutine(BundleRequestCoroutine(urls, onError, onSuccess));
+        }
+        private static IEnumerator BundleRequestCoroutine(List<string> urls, Action<string> onError, Action<List<T>> onSuccess)
+        {
+            int urlsCount = urls.Count;
+            List<UnityWebRequestAsyncOperation> requests = new(urlsCount);
+
+            for (int i = 0; i < urlsCount; i++)
+            {
+                using UnityWebRequest www = UnityWebRequest.Get(urls[i]);
+                {
+                    CoreLogger.LogMessage($"Adding request {www.url} to list", true);
+                    requests.Add(www.SendWebRequest());
+                }
+            }
+
+            CoreLogger.LogMessage("Waiting for requests to be fetched...", true);
+            yield return new WaitUntil(() => AllRequestsDone(requests));
+            CoreLogger.LogMessage("All requests collected.", true);
+
+            List<T> responses = new();
+            HandleAllRequestsWhenDone
+            (
+                requests: requests,
+                onError: (error) => onError(error),
+                onSuccess: (data) => responses.Add(data)
+            );
+
+            // foreach (UnityWebRequestAsyncOperation request in requests)
+            // {
+            //     request.webRequest.Dispose();
+            // }
+
+            Debug.Log("---------- Calling on success for bundle request");
+            onSuccess(responses);
+        }
+        private static bool AllRequestsDone(List<UnityWebRequestAsyncOperation> requests)
+        {
+            return requests.All(r => r.isDone);
+        }
+        private static void HandleAllRequestsWhenDone(List<UnityWebRequestAsyncOperation> requests, Action<string> onError, Action<T> onSuccess)
+        {
+            for (int i = 0; i < requests.Count; i++)
+            {
+                UnityWebRequest www = requests[i].webRequest;
+
+                // FIXME: ArgumentNullException: Value cannot be null. Parameter name: _unity_self
+                if (www.result != UnityWebRequest.Result.Success)
+                {
+                    onError($"Failed to fetch url {requests[i].webRequest.url}. Error: {www.error}");
+                }
+                else
+                {
+                    string json = Encoding.UTF8.GetString(www.downloadHandler.data);
+                    T model = JsonConvert.DeserializeObject<T>(json);
+                    onSuccess(model);
+                }
             }
         }
 

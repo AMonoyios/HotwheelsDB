@@ -6,41 +6,66 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
+using SW.Logger;
 using UnityEngine;
 using UnityEngine.Networking;
 
 namespace HWAPI
 {
-    public static partial class Request
+    public class RequestSinglesPageSection : FandomAPIRequest<SinglesPageSectionModel.Parse>
     {
-        public static void GetSinglesPageSection(string page, int section, Action<string> onError, Action<SinglesPageSectionModel> onSuccess)
-        {
-            if (Instance == null)
-                Init();
-
-            Instance.StartCoroutine(GetSinglesPageSectionCoroutine(page, section, onError, onSuccess));
-        }
-        private static IEnumerator GetSinglesPageSectionCoroutine(string page, int section, Action<string> onError, Action<SinglesPageSectionModel> onSuccess)
+        public static void GetSinglesPageSection(string page, int section, Action<string> onError, Action<SinglesPageSectionModel.Parse> onSuccess)
         {
             string url = $"https://hotwheels.fandom.com/api.php?action=parse&page={page}&section={section}&format=json";
 
-            // TODO_HIGH: Make this a base class that can be overwritten
-            using UnityWebRequest www = UnityWebRequest.Get(url);
-                yield return www.SendWebRequest();
+            CoreLogger.LogMessage($"URL request: {url}", true);
 
-            if (www.result != UnityWebRequest.Result.Success)
-            {
-                onError($"Failed to fetch url {url}. Error: {www.error}");
-            }
-            else
-            {
-                string json = Encoding.UTF8.GetString(www.downloadHandler.data);
-                SinglesPageSectionModel model = JsonConvert.DeserializeObject<SinglesPageSectionModel>(json);
+            Request
+            (
+                url: url,
+                onError: (error) => onError(error),
+                onSuccess: (model) => onSuccess(model)
+            );
+        }
 
-                onSuccess(model);
+        public static void GetSinglesPageSection(string page, SinglesPageModel singlesPageModel, Action<string> onError, Action<List<SinglesPageSectionModel.Parse>> onSuccess)
+        {
+            List<string> urls = new();
+            for (int sectionIndex = 1; sectionIndex <= singlesPageModel.PageSections.Count; sectionIndex++)
+            {
+                string url = $"https://hotwheels.fandom.com/api.php?action=parse&page={page}&section={sectionIndex}&format=json";
+
+                CoreLogger.LogMessage($"URL {sectionIndex}: {url}", true);
+
+                urls.Add(url);
             }
+
+            BundleRequest
+            (
+                urls: urls,
+                onError: (error) => onError(error),
+                onSuccess: (parse) =>
+                {
+                    List<SinglesPageSectionModel.Parse> models = new();
+                    for (int modelIndex = 0; modelIndex < parse.Count; modelIndex++)
+                    {
+                        List<SinglesPageSectionModel.Parse> sectionModels = Parser<SinglesPageSectionModel.Parse>.FromWikiText(parse[modelIndex].table.content);
+
+                        for (int sectionIndex = 0; sectionIndex < sectionModels.Count; sectionIndex++)
+                        {
+                            CoreLogger.LogMessage($"Adding model {sectionModels[sectionIndex].title} to general models list.", true);
+
+                            models.Add(sectionModels[sectionIndex]);
+                        }
+                    }
+
+                    onSuccess(models);
+                }
+            );
         }
     }
 }

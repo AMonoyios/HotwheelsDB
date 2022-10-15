@@ -40,47 +40,33 @@ public sealed class SinglesYearOption : MonoBehaviour
     {
         CoreLogger.LogMessage($"Clicked on {yearLabel.text}, title: {title}, page: {page}");
 
-        GetCarsOfYear((cars) =>
-        {
-            for (int i = 0; i < cars.Count; i++)
-            {
-                Debug.Log($"Name: {cars[i].Name}, Image: {cars[i].Image}");
-            }
-        });
+        GetCarsOfYear();
     }
 
-    // FIXME: Car names do not match car image
-    private void GetCarsOfYear(System.Action<List<SinglesPageSectionModel.Car>> onComplete)
+    // TODO_HIGH: Test this if is working
+    private void GetCarsOfYear()
     {
-        Request.GetSinglesPage
+        RequestSinglesPage.GetSinglesPage
         (
             page: page,
-            onError: (error) =>
-                CoreLogger.LogError(error)
-            ,
-            onSuccess: (data) =>
+            onError: (error) => CoreLogger.LogError(error),
+            onSuccess: (singlesPageModel) =>
             {
-                List<SinglesPageSectionModel.Car> Cars = new();
-                for (int sectionIndex = 0; sectionIndex < data.PageSections.Count; sectionIndex++)
-                {
-                    Request.GetSinglesPageSection
-                    (
-                        page: page,
-                        section: sectionIndex,
-                        onError: (error) =>
-                            CoreLogger.LogError(error),
-                        onSuccess: (data) =>
-                            {
-                                for (int carIndex = 0; carIndex < data.TotalCars; carIndex++)
-                                {
-                                    Cars.Add(data.GetCar(carIndex));
-                                }
+                List<SinglesPageSectionModel.Car> cars = new();
 
-                                // BUG: Move this outside of the success state of this request to prevent multiple intances executing
-                                onComplete(Cars);
-                            }
-                    );
-                }
+                RequestSinglesPageSection.GetSinglesPageSection
+                (
+                    page: page,
+                    singlesPageModel: singlesPageModel,
+                    onError: (error) => CoreLogger.LogError(error),
+                    onSuccess: (parseList) =>
+                    {
+                        for (int i = 0; i < parseList.Count; i++)
+                        {
+                            Debug.Log($"Car {i}: {parseList[i].title}");
+                        }
+                    }
+                );
             }
         );
     }

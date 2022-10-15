@@ -13,19 +13,11 @@ using UnityEngine.Networking;
 
 namespace HWAPI
 {
-    public static partial class Request
+    public class RequestYearPage : FandomAPIRequest<YearCategoriesModel>
     {
-        public static void GetYearPage<T>(string cmcontinue, Action<string> onError, Action<T> onSuccess) where T : BaseNavigateModel
+        public static void GetYearPage(string cmcontinue, Action<string> onError, Action<YearCategoriesModel> onSuccess, int perPage = 10)
         {
-            if (Instance == null)
-                Init();
-
-            Instance.StartCoroutine(GetYearsCoroutine(cmcontinue, onError, onSuccess));
-        }
-        private static IEnumerator GetYearsCoroutine<T>(string cmcontinue, Action<string> onError, Action<T> onSuccess) where T : BaseNavigateModel
-        {
-            const uint perPage = 20;
-            string url = $"https://hotwheels.fandom.com/api.php?action=query&list=categorymembers&cmend={perPage}&cmdir=descending&cmtitle=Category:Hot_Wheels_by_Year&format=json";
+            string url = $"https://hotwheels.fandom.com/api.php?action=query&list=categorymembers&cmlimit={perPage}&cmdir=descending&cmtitle=Category:Hot_Wheels_by_Year&format=json";
 
             if (Regex.Match(cmcontinue, "subcat\\|([^|]+)\\|\\w").Success)
             {
@@ -33,21 +25,12 @@ namespace HWAPI
                 url += $"&cmcontinue={cmcontinue}";
             }
 
-            // TODO_HIGH: Make this a base class that can be overwritten
-            using UnityWebRequest www = UnityWebRequest.Get(url);
-                yield return www.SendWebRequest();
-
-            if (www.result != UnityWebRequest.Result.Success)
-            {
-                onError($"Failed to fetch url {url}. Error: {www.error}");
-            }
-            else
-            {
-                string json = Encoding.UTF8.GetString(www.downloadHandler.data);
-                T model = JsonConvert.DeserializeObject<T>(json);
-
-                onSuccess(model);
-            }
+            Request
+            (
+                url: url,
+                onError: (error) => onError(error),
+                onSuccess: (yearCategoriesModel) => onSuccess(yearCategoriesModel)
+            );
         }
     }
 }

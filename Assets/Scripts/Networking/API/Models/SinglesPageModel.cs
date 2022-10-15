@@ -13,9 +13,9 @@ namespace HWAPI
     public sealed class SinglesPageModel
     {
         [JsonProperty("parse")]
-        private readonly Parse parse;
+        public Parse parse;
 
-        private class Parse
+        public class Parse
         {
             [JsonProperty("title")]
             public string title;

@@ -14,11 +14,11 @@ using UnityEngine.Networking;
 
 namespace HWAPI
 {
-    public static class Parser
+    public static class Parser<T>
     {
-        public static List<VersionsTableCarInfo> FromWikitext(string wikitext)
+        public static List<VersionsTableCarInfo> FromWikitext(string wikiText)
         {
-            List<string> lines = new(wikitext.Split("|-"));
+            List<string> lines = new(wikiText.Split("|-"));
             List<VersionsTableCarInfo> entries = new();
 
             // for (int i = 0; i < lines.Count; i++)
@@ -103,6 +103,12 @@ namespace HWAPI
             }
 
             return entries;
+        }
+
+        // TODO_HIGH: Finish this parser
+        public static List<T> FromWikiText(string wikiText)
+        {
+            return null;
         }
     }
 }
