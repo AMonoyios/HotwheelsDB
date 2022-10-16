@@ -3155,6 +3155,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   logPrefab: {fileID: 3489733721104684334, guid: f065b337ba87b564e9c7225ae1dba186, type: 3}
   logsContent: {fileID: 3255553025251584906}
+  lastLogsTMP: {fileID: 5965685357755375335}
 --- !u!1 &840110686185488105
 GameObject:
   m_ObjectHideFlags: 0

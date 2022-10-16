@@ -17,6 +17,9 @@ public sealed class DevConsolePanelUI : MonoBehaviour
     [SerializeField]
     private Transform logsContent;
 
+    [SerializeField]
+    private TextMeshProUGUI lastLogsTMP;
+
     public void OnLogMessageReceived(string msg, string stackTrace, LogType type)
     {
         if (GameManager.IsDevMode)
@@ -24,5 +27,10 @@ public sealed class DevConsolePanelUI : MonoBehaviour
             GameObject logGameObject = Instantiate(logPrefab, logsContent);
             logGameObject.GetComponentInChildren<TextMeshProUGUI>().text = msg;
         }
+    }
+
+    private void Awake()
+    {
+        lastLogsTMP.text = $"Last {logsContent.childCount} logs";
     }
 }

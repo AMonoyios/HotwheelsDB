@@ -50,9 +50,16 @@ namespace HWAPI
                 onError: (error) => onError(error),
                 onSuccess: (parse) =>
                 {
+                    for (int i = 0; i < parse.Count; i++)
+                    {
+                        CoreLogger.LogMessage($"Title for parse response at index {i}: {parse[i].title}", true);
+                    }
+
                     List<SinglesPageSectionModel.Parse> models = new();
                     for (int modelIndex = 0; modelIndex < parse.Count; modelIndex++)
                     {
+                        CoreLogger.LogMessage($"Table content {modelIndex}: {parse[modelIndex].table.content}", true);
+
                         List<SinglesPageSectionModel.Parse> sectionModels = Parser<SinglesPageSectionModel.Parse>.FromWikiText(parse[modelIndex].table.content);
 
                         for (int sectionIndex = 0; sectionIndex < sectionModels.Count; sectionIndex++)

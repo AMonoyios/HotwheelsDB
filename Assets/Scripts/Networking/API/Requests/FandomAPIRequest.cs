@@ -53,16 +53,16 @@ namespace HWAPI
             int urlsCount = urls.Count;
             List<UnityWebRequestAsyncOperation> requests = new(urlsCount);
 
+            CoreLogger.LogMessage("Waiting for requests to be fetched...", true);
+
             for (int i = 0; i < urlsCount; i++)
             {
-                using UnityWebRequest www = UnityWebRequest.Get(urls[i]);
-                {
-                    CoreLogger.LogMessage($"Adding request {www.url} to list", true);
-                    requests.Add(www.SendWebRequest());
-                }
+                var www = UnityWebRequest.Get(urls[i]);
+
+                CoreLogger.LogMessage($"Adding request {www.result} to list", true);
+                requests.Add(www.SendWebRequest());
             }
 
-            CoreLogger.LogMessage("Waiting for requests to be fetched...", true);
             yield return new WaitUntil(() => AllRequestsDone(requests));
             CoreLogger.LogMessage("All requests collected.", true);
 
@@ -74,10 +74,11 @@ namespace HWAPI
                 onSuccess: (data) => responses.Add(data)
             );
 
-            // foreach (UnityWebRequestAsyncOperation request in requests)
-            // {
-            //     request.webRequest.Dispose();
-            // }
+            foreach (UnityWebRequestAsyncOperation request in requests)
+            {
+                CoreLogger.LogMessage($"Disposing request {request}");
+                request.webRequest.Dispose();
+            }
 
             Debug.Log("---------- Calling on success for bundle request");
             onSuccess(responses);
@@ -90,18 +91,34 @@ namespace HWAPI
         {
             for (int i = 0; i < requests.Count; i++)
             {
-                UnityWebRequest www = requests[i].webRequest;
+                Debug.Log(requests[i].webRequest.url);
+            }
 
-                // FIXME: ArgumentNullException: Value cannot be null. Parameter name: _unity_self
-                if (www.result != UnityWebRequest.Result.Success)
+            for (int i = 0; i < requests.Count; i++)
+            {
+                using UnityWebRequest www = requests[i].webRequest;
                 {
-                    onError($"Failed to fetch url {requests[i].webRequest.url}. Error: {www.error}");
-                }
-                else
-                {
-                    string json = Encoding.UTF8.GetString(www.downloadHandler.data);
-                    T model = JsonConvert.DeserializeObject<T>(json);
-                    onSuccess(model);
+                    CoreLogger.LogMessage($"WWW request {i}: {www.url}", true);
+
+                    if (www.result != UnityWebRequest.Result.Success)
+                    {
+                        onError($"Failed to fetch url {requests[i].webRequest.url}. Error: {www.error}");
+                    }
+                    else
+                    {
+                        string json = Encoding.UTF8.GetString(www.downloadHandler.data);
+
+                        CoreLogger.LogMessage($"Json data {i}: {json}", true);
+
+                        T model = JsonConvert.DeserializeObject<T>(json);
+
+                        if (model == null)
+                        {
+                            CoreLogger.LogError($"Json Deserialized to object {model.GetType()} returned null at index: {i}", true);
+                        }
+
+                        onSuccess(model);
+                    }
                 }
             }
         }

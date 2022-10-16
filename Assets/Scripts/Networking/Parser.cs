@@ -108,6 +108,7 @@ namespace HWAPI
         // TODO_HIGH: Finish this parser
         public static List<T> FromWikiText(string wikiText)
         {
+            CoreLogger.LogMessage($"------ Parsed {wikiText} to null", true);
             return null;
         }
     }
