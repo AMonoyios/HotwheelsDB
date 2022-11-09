@@ -16,7 +16,7 @@ using UnityEngine.Networking;
 
 namespace HWAPI
 {
-    public class RequestSinglesPageSection : FandomAPIRequest<SinglesPageSectionModel.Parse>
+    public class RequestSinglesPageSection : FandomAPIRequest<SinglesPageSectionModel>
     {
         public static void GetSinglesPageSection(string page, int section, Action<string> onError, Action<SinglesPageSectionModel.Parse> onSuccess)
         {
@@ -28,7 +28,7 @@ namespace HWAPI
             (
                 url: url,
                 onError: (error) => onError(error),
-                onSuccess: (model) => onSuccess(model)
+                onSuccess: (model) => onSuccess(model.parse)
             );
         }
 
@@ -37,30 +37,29 @@ namespace HWAPI
             List<string> urls = new();
             for (int sectionIndex = 1; sectionIndex <= singlesPageModel.PageSections.Count; sectionIndex++)
             {
-                string url = $"https://hotwheels.fandom.com/api.php?action=parse&page={page}&section={sectionIndex}&format=json";
-
-                CoreLogger.LogMessage($"URL {sectionIndex}: {url}", true);
-
-                urls.Add(url);
+                urls.Add
+                (
+                    item: $"https://hotwheels.fandom.com/api.php?action=parse&page={page}&section={sectionIndex}&format=json"
+                );
             }
 
             BundleRequest
             (
                 urls: urls,
                 onError: (error) => onError(error),
-                onSuccess: (parse) =>
+                onSuccess: (data) =>
                 {
-                    for (int i = 0; i < parse.Count; i++)
-                    {
-                        CoreLogger.LogMessage($"Title for parse response at index {i}: {parse[i].title}", true);
-                    }
+                    // for (int i = 0; i < data.Count; i++)
+                    // {
+                    //     CoreLogger.LogMessage($"Title for parse response at index {i}: {data[i].parse.title}", true);
+                    // }
 
                     List<SinglesPageSectionModel.Parse> models = new();
-                    for (int modelIndex = 0; modelIndex < parse.Count; modelIndex++)
+                    for (int modelIndex = 0; modelIndex < data.Count; modelIndex++)
                     {
-                        CoreLogger.LogMessage($"Table content {modelIndex}: {parse[modelIndex].table.content}", true);
+                        CoreLogger.LogMessage($"Table content {modelIndex}: {data[modelIndex].parse.table.content}", true);
 
-                        List<SinglesPageSectionModel.Parse> sectionModels = Parser<SinglesPageSectionModel.Parse>.FromWikiText(parse[modelIndex].table.content);
+                        List<SinglesPageSectionModel.Parse> sectionModels = Parser<SinglesPageSectionModel.Parse>.FromWikiText(data[modelIndex].parse.table.content);
 
                         for (int sectionIndex = 0; sectionIndex < sectionModels.Count; sectionIndex++)
                         {

@@ -54,13 +54,10 @@ namespace HWAPI
             List<UnityWebRequestAsyncOperation> requests = new(urlsCount);
 
             CoreLogger.LogMessage("Waiting for requests to be fetched...", true);
-
             for (int i = 0; i < urlsCount; i++)
             {
-                var www = UnityWebRequest.Get(urls[i]);
-
-                CoreLogger.LogMessage($"Adding request {www.result} to list", true);
-                requests.Add(www.SendWebRequest());
+                CoreLogger.LogMessage($"URL {i}: {urls[i]}", true);
+                requests.Add(UnityWebRequest.Get(urls[i]).SendWebRequest());
             }
 
             yield return new WaitUntil(() => AllRequestsDone(requests));
@@ -76,11 +73,10 @@ namespace HWAPI
 
             foreach (UnityWebRequestAsyncOperation request in requests)
             {
-                CoreLogger.LogMessage($"Disposing request {request}");
                 request.webRequest.Dispose();
             }
 
-            Debug.Log("---------- Calling on success for bundle request");
+            // Debug.Log("---------- Calling on success for bundle request");
             onSuccess(responses);
         }
         private static bool AllRequestsDone(List<UnityWebRequestAsyncOperation> requests)
@@ -89,10 +85,10 @@ namespace HWAPI
         }
         private static void HandleAllRequestsWhenDone(List<UnityWebRequestAsyncOperation> requests, Action<string> onError, Action<T> onSuccess)
         {
-            for (int i = 0; i < requests.Count; i++)
-            {
-                Debug.Log(requests[i].webRequest.url);
-            }
+            // for (int i = 0; i < requests.Count; i++)
+            // {
+            //     Debug.Log("--- " + i + ": " + requests[i].webRequest.url);
+            // }
 
             for (int i = 0; i < requests.Count; i++)
             {
@@ -111,6 +107,7 @@ namespace HWAPI
                         CoreLogger.LogMessage($"Json data {i}: {json}", true);
 
                         T model = JsonConvert.DeserializeObject<T>(json);
+                        // Debug.Log("---------> Target datatype: " + model.GetType().ToString());
 
                         if (model == null)
                         {
